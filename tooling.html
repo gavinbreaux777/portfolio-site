@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Internal tooling — case study</title>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="sitenav">
+    <a href="index.html">Overview</a>
+    <a href="attribution.html">Attribution</a>
+    <a href="tooling.html" aria-current="page">Tooling</a>
+  </nav>
+
+  <header class="masthead">
+    <div class="stamp">
+      <span class="label">Case study</span>
+      <span class="label">Cloudflare Workers &middot; D1 &middot; R2</span>
+      <span class="label">In production</span>
+    </div>
+
+    <h1>Five manual systems, one record</h1>
+
+    <p class="deck">
+      Quoting, invoicing, tire inventory, expenses, and customer accounts were
+      tracked in five disconnected places. They were five views of the same
+      event. I scoped and shipped an app that models it once.
+    </p>
+
+    <div class="byline">
+      <span class="label"><span class="ph">Your Name</span></span>
+      <span class="label">Software developer</span>
+      <span class="label"><span class="ph">contact</span></span>
+    </div>
+  </header>
+
+  <div class="spec-strip">
+    <div class="spec">
+      <span class="spec-val">24</span>
+      <span class="label">Migrations</span>
+      <span class="spec-note">Applied to live data, additive only</span>
+    </div>
+    <div class="spec">
+      <span class="spec-val">165</span>
+      <span class="label">Integration tests</span>
+      <span class="spec-note">Real D1, no mocks</span>
+    </div>
+    <div class="spec">
+      <span class="spec-val">2</span>
+      <span class="label">Daily users</span>
+      <span class="spec-note">No staging environment</span>
+    </div>
+  </div>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 01</span>
+      <span class="label">Origin</span>
+    </div>
+    <div class="body-col">
+      <h2>The consolidation was the decision</h2>
+      <p>
+        Call attribution lived in a Google Form feeding a spreadsheet. Invoices
+        were made in separate software. Tire counts were tracked by hand. Quotes
+        were written by hand with no link to the job they became. Expenses and
+        customer accounts weren't tracked at all.
+      </p>
+      <p class="pull">
+        A call becomes a job. The job consumes tires, produces an invoice,
+        generates expenses, and belongs to a customer. One event, recorded five
+        times, in five places that never agreed.
+      </p>
+      <p>
+        The tool started as tire inventory and grew into everything above as the
+        real workflow became clear. The name stuck from the first version, which
+        is honest about how it happened &mdash; the scope was discovered by using
+        it, not planned up front.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 02</span>
+      <span class="label">Method</span>
+    </div>
+    <div class="body-col">
+      <h2>How this was built</h2>
+      <p>
+        This was built with AI assistance, in Claude Code. My work was the
+        product side: identifying that five systems were one event, specifying
+        the domain rules from how the business actually runs, deciding what
+        belonged in the tool and what didn't, and operating it in production
+        while the owner used it daily.
+      </p>
+      <p>
+        The architecture and implementation were AI-generated under that
+        direction. I'm stating that plainly because it's how the work happened,
+        and because shipping a system a business depends on &mdash; and keeping it
+        running &mdash; is the part that transfers.
+      </p>
+      <div class="note">
+        <span class="label">What I'd want to be asked about</span>
+        <p>
+          The domain modeling and the operational decisions: why a quote number
+          is assigned to every job but an invoice number only at completion, why
+          voiding a completed job restocks inventory and voiding a quote doesn't,
+          and what it's like to run schema changes against a database a business
+          is actively using. Those I can speak to. The deeper implementation
+          internals I'd be learning alongside you.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 03</span>
+      <span class="label">System</span>
+    </div>
+    <div class="body-col">
+      <h2>What it does</h2>
+      <ul class="plain">
+        <li><strong>Jobs</strong> &mdash; one record from first call through quote, completion, and paid invoice.</li>
+        <li><strong>Quotes and invoices</strong> &mdash; generated as documents from the job record, with per-line price overrides.</li>
+        <li><strong>Tire inventory</strong> &mdash; counts and average cost, decremented when a job completes.</li>
+        <li><strong>Expenses</strong> &mdash; categorized against a Schedule C list for tax time.</li>
+        <li><strong>Fleet accounts</strong> &mdash; repeat commercial customers with payment terms.</li>
+        <li><strong>Job photos</strong> &mdash; damage and before/after proof, stored in R2.</li>
+      </ul>
+      <p>
+        Cloudflare Workers serving both the API and the frontend, D1 for
+        relational data, R2 for images. Three runtime dependencies, no build
+        step. Passkey authentication with invite-gated registration &mdash; there
+        are two legitimate users and there always will be.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 04</span>
+      <span class="label">Operating</span>
+    </div>
+    <div class="body-col">
+      <h2>Running it while it's in use</h2>
+      <p>
+        The app went into daily use early and stayed there. Every schema change
+        after the first week had to apply to a database with real rows in it,
+        while the owner was mid-week and taking calls. There's no staging
+        environment, so a bug isn't a failing test &mdash; it's an invoice with
+        the wrong number, sent to a customer.
+      </p>
+      <p>
+        Practically that meant: 24 migrations written to be additive rather than
+        destructive, a full database export before every production change, and
+        an automated test suite that has to pass before anything merges. Merging
+        deploys automatically, so that test run is the last gate before the
+        business is using the change.
+      </p>
+      <p>
+        Rows are never hard-deleted. A mis-entered purchase is reversed and
+        marked rather than erased, so it stays available for audit but drops out
+        of reporting totals. That's a bookkeeping requirement, not a technical
+        one.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <span class="label">End of case study</span>
+    <p class="footer-note">
+      Figures are structural and drawn from the repository: migration count,
+      test count, dependency count. No business performance metrics appear here.
+    </p>
+    <p class="footer-note">
+      <span class="ph">Add: link to repo if public, or live app.</span>
+    </p>
+  </footer>
+
+</div>
+</body>
+</html>

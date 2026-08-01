@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Call attribution — case study</title>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="sitenav">
+    <a href="index.html">Overview</a>
+    <a href="attribution.html" aria-current="page">Attribution</a>
+    <a href="tooling.html">Tooling</a>
+  </nav>
+
+  <header class="masthead">
+    <div class="stamp">
+      <span class="label">Case study</span>
+      <span class="label">Summer 2026</span>
+      <span class="label">Mobile truck tire service</span>
+    </div>
+
+    <h1>Making a phone call measurable</h1>
+
+    <p class="deck">
+      A roadside truck tire business had run for almost a year with barely a job
+      a day. Three ad platforms each reported a fraction of what was happening.
+      None could answer the only question that mattered: did the call turn into
+      work?
+    </p>
+
+    <div class="byline">
+      <span class="label"><span class="ph">Your Name</span></span>
+      <span class="label">Software developer</span>
+      <span class="label"><span class="ph">contact</span></span>
+    </div>
+  </header>
+
+  <div class="spec-strip">
+    <div class="spec">
+      <span class="spec-val">3</span>
+      <span class="label">Sources joined</span>
+      <span class="spec-note">GA4, Google Ads, Local Services Ads</span>
+    </div>
+    <div class="spec">
+      <span class="spec-val">10&times;</span>
+      <span class="label">Spend increase</span>
+      <span class="spec-note">Across channels, owner-initiated</span>
+    </div>
+    <div class="spec">
+      <span class="spec-val">1&ndash;2 mo</span>
+      <span class="label">To that decision</span>
+      <span class="spec-note">From reluctance at $300/month</span>
+    </div>
+  </div>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 01</span>
+      <span class="label">Situation</span>
+    </div>
+    <div class="body-col">
+      <h2>Almost no calls, in the season that should have been busiest</h2>
+      <p>
+        Mobile tire service for semi and commercial trucks &mdash; roadside work,
+        where a stranded driver searches once and calls whoever answers. Demand
+        isn't the constraint. Being findable at the moment of the search is.
+      </p>
+      <p>
+        The owner rarely did more than a job a day. It was summer, which ruled
+        out seasonality. Ads pointed at a Google Business Profile; there was no
+        website, so there was nowhere to place conversion tracking and no
+        landing experience to tune.
+      </p>
+      <p class="pull">
+        Every measurement decision that followed depended on first having
+        somewhere to measure.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 02</span>
+      <span class="label">Sequence</span>
+    </div>
+    <div class="body-col">
+      <h2>The order mattered</h2>
+      <p>Each step was a precondition for the next.</p>
+
+      <div class="arc">
+        <div class="arc-step">
+          <span class="arc-n">01</span>
+          <span class="arc-text">
+            <strong>Built the customer-facing website</strong>
+            <span>A real landing destination for paid traffic, and the first surface capable of hosting conversion tracking.</span>
+          </span>
+        </div>
+        <div class="arc-step">
+          <span class="arc-n">02</span>
+          <span class="arc-text">
+            <strong>Rebuilt Google Ads, added Local Services Ads</strong>
+            <span>Phrase-match search on semi and commercial tire queries, Performance Max, and LSA.</span>
+          </span>
+        </div>
+        <div class="arc-step">
+          <span class="arc-n">03</span>
+          <span class="arc-text">
+            <strong>Found no unified tracking</strong>
+            <span>Three platforms reporting separately, in incompatible formats, with no way to see a call end to end.</span>
+          </span>
+        </div>
+        <div class="arc-step">
+          <span class="arc-n">04</span>
+          <span class="arc-text">
+            <strong>Built the attribution layer</strong>
+            <span>One row per call, joining platform data to the outcome the owner recorded by hand.</span>
+          </span>
+        </div>
+        <div class="arc-step">
+          <span class="arc-n">05</span>
+          <span class="arc-text">
+            <strong>Used it to move the budget</strong>
+            <span>Cut spend on traffic that didn't convert; pushed budget toward what did.</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 03</span>
+      <span class="label">Problem</span>
+    </div>
+    <div class="body-col">
+      <h2>Three systems, three partial truths</h2>
+
+      <div class="sources">
+        <div class="source">
+          <span class="source-name">GA4</span>
+          <span class="source-sees">Site sessions and <code>tel:</code> click events &mdash; a real conversion on a business that runs on calls.</span>
+          <span class="source-blind">Tracing a tap back to its source was difficult and often impossible.</span>
+        </div>
+        <div class="source">
+          <span class="source-name">Google Ads</span>
+          <span class="source-sees">Its own call reporting, tied to campaigns and keywords.</span>
+          <span class="source-blind">Blind to anything it didn't serve.</span>
+        </div>
+        <div class="source">
+          <span class="source-name">Local Services Ads</span>
+          <span class="source-sees">Lead records in a separate console with its own ratings.</span>
+          <span class="source-blind">Doesn't join to GA4 or Ads at all.</span>
+        </div>
+      </div>
+
+      <p>
+        Left alone this produces two failures at once: the same call counted
+        twice by two systems, and calls missing from all of them. Neither error
+        is visible from inside any one platform &mdash; the dashboards look fine.
+      </p>
+      <p>
+        And the deeper gap: all three measure <strong>calls</strong>. The
+        business makes money on <strong>jobs</strong>. A cost-conscious owner
+        asked to spend more isn't asking how many phones rang.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 04</span>
+      <span class="label">Build</span>
+    </div>
+    <div class="body-col">
+      <h2>One row per call</h2>
+      <p>
+        Built in Google Sheets, fed by a Google Form &mdash; a deliberate choice
+        over anything more sophisticated. The outcome data could only come from
+        the person answering the phone, so adoption was the binding constraint.
+        A tool the owner fills in between jobs beats a better one he abandons.
+      </p>
+
+      <div class="tag">
+        <div class="tag-head">
+          <span class="tag-id">Design &middot; Joining three sources to an outcome</span>
+          <span class="chip chip-hold">Owner-entered data</span>
+        </div>
+        <div class="tag-body">
+          <div class="beat">
+            <span class="label">Join key</span>
+            <p>
+              Phone number normalized to ten raw digits. Each platform formats
+              numbers differently, so matching on the raw string silently drops
+              rows and produces a report that looks complete. Stripping to digits
+              turned three incompatible exports into one joinable key.
+            </p>
+          </div>
+          <div class="beat">
+            <span class="label">Aggregation</span>
+            <p>
+              <code>COUNTIFS</code> and <code>SUMIFS</code> into Outcomes and
+              Channels tabs, so calls could be read by date, by source, and by
+              what they became. Charts built on that data made gaps and trends
+              visible directly.
+            </p>
+          </div>
+          <div class="beat">
+            <span class="label">Self-extension</span>
+            <p>
+              <code>ARRAYFORMULA</code> and open chart ranges, so new form
+              submissions extend the report automatically. Anything needing a
+              formula dragged down would have gone stale within a week.
+            </p>
+          </div>
+          <div class="beat">
+            <span class="label">Outcome</span>
+            <p>
+              The owner recorded what the call was and whether it became work
+              &mdash; the same details he still records on job forms today. That
+              column is the one thing no platform could supply.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="note">
+        <span class="label">Known limitation</span>
+        <p>
+          Outcome data is self-reported and hand-entered, so it carries the usual
+          risks. It was reconciled against platform call counts to catch gaps,
+          but it isn't instrumented ground truth. It was accurate enough to make
+          budget decisions with, which was the bar it needed to clear.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 05</span>
+      <span class="label">Result</span>
+    </div>
+    <div class="body-col">
+      <h2>The measurement is what unlocked the spend</h2>
+      <p>
+        The owner was reluctant to commit $300 a month. Within one to two months
+        &mdash; call volume visibly climbing, each call traceable to a source and
+        an outcome &mdash; he was spending more than ten times that across
+        channels, confidently.
+      </p>
+      <p class="pull">
+        An owner who won't spend $300 because he can't see what it returns isn't
+        being stubborn. He's responding correctly to missing information.
+      </p>
+      <p>
+        That decision is the strongest evidence the system worked, and better
+        evidence than a figure would be. Nobody multiplies their ad spend tenfold
+        on a channel they can't see returning.
+      </p>
+
+      <div class="note">
+        <span class="label">On what isn't claimed here</span>
+        <p>
+          No revenue or profit figures appear on this page. The business had no
+          measured baseline before this engagement, so any before-and-after
+          comparison would be invented. The prior state is the owner's
+          characterization; the spend increase is a decision I observed.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 06</span>
+      <span class="label">Ongoing</span>
+    </div>
+    <div class="body-col">
+      <h2>The problem it surfaced next</h2>
+      <p>
+        Better measurement produces better problems. With calls classified by
+        outcome, the leak became visible: budget meant for semi tire work was
+        going to passenger vehicle traffic, and to searchers who landed on the
+        page and left because it didn't show what they were looking for. Mostly
+        that meant no call at all &mdash; spend with nothing on the other end.
+      </p>
+      <p>
+        Active work: tightening phrase-match targeting and extending negative
+        keyword lists against a 33-keyword positive set, plus landing page
+        changes so the page answers what the search actually asked. Then watching
+        the outcome column to confirm the mix shifts rather than assuming it did.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 07</span>
+      <span class="label">Consequence</span>
+    </div>
+    <div class="body-col">
+      <h2>Why this became software</h2>
+      <p>Running the Sheets system revealed how much was tracked by hand elsewhere:</p>
+      <ul class="plain">
+        <li>Call attribution in a Google Form feeding a spreadsheet</li>
+        <li>Invoices in separate third-party software</li>
+        <li>Tire inventory counted manually</li>
+        <li>Quotes written by hand, unlinked to the job they became</li>
+        <li>No expense tracking and no customer accounts at all</li>
+      </ul>
+      <p>
+        Not five problems &mdash; five views of one event. A call becomes a job,
+        the job consumes tires, produces an invoice, generates expenses, and
+        belongs to a customer. Modeling that event once collapses all five.
+      </p>
+      <p><a href="tooling.html">How that became an internal tool &rarr;</a></p>
+    </div>
+  </section>
+
+  <footer>
+    <span class="label">End of case study</span>
+    <p class="footer-note">
+      Figures here are limited to what's directly observable: sources joined,
+      relative spend increase, timeframe. Business performance figures are
+      deliberately omitted.
+    </p>
+  </footer>
+
+</div>
+</body>
+</html>
