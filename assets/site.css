@@ -412,31 +412,57 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
 /* ---------- index cards ---------- */
 
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1rem; }
+/* Interactive, so it carries more weight than the static containers it
+   sits among (.note, .tag): a raised surface, a shadow, and an amber
+   edge that reads as a target rather than a panel. */
 .card {
+  position: relative; isolation: isolate;
   border: 1px solid var(--rule-strong); background: var(--ground-raised);
-  border-radius: 3px; padding: 1.1rem;
+  border-radius: 5px; padding: 1.1rem 1.1rem 1.2rem;
   display: flex; flex-direction: column; gap: 0.5rem;
   text-decoration: none; color: inherit;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05), 0 1px 1px rgb(0 0 0 / 0.03);
+}
+/* Amber rule along the top edge — visible at rest, so the card reads as
+   actionable before any pointer arrives (and on touch, where hover never does). */
+.card::before {
+  content: ""; position: absolute; inset: -1px -1px auto -1px; height: 3px;
+  background: var(--amber); opacity: 0.55;
+  border-radius: 5px 5px 0 0;
 }
 .card:hover {
   border-color: var(--amber); color: inherit;
-  background: var(--ground-sunk);
+  background: var(--ground-raised);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 0.10), 0 2px 5px rgb(0 0 0 / 0.06);
 }
-.card:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.card:hover::before { opacity: 1; }
+.card:active { box-shadow: 0 1px 2px rgb(0 0 0 / 0.06); }
+.card:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 .card h3 { margin: 0; }
+.card:hover h3 { color: var(--amber); }
 .card p { font-size: 0.9rem; color: var(--steel); max-width: none; }
 
 /* Persistent affordance: without it the cards read as static blocks,
    since the border only reacted on hover and touch has no hover. */
+/* Rendered as a button, not a text link: at a glance the eye needs a
+   shape it recognises as pressable, which underlined amber text is not. */
 .card-cta {
-  margin-top: auto; padding-top: 0.75rem;
-  display: inline-flex; align-items: center; gap: 0.4rem;
+  margin-top: auto; align-self: flex-start;
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--amber); border-radius: 3px;
   font-family: var(--font-mono); font-size: 0.75rem;
   letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--amber); font-weight: 600;
 }
 .card-cta::after { content: "\2192"; font-size: 0.875rem; }
+/* Fills on hover so the whole card has one obvious focal point. */
+.card:hover .card-cta {
+  background: var(--amber);
+  color: var(--ground-raised);
+}
 @media (prefers-reduced-motion: no-preference) {
+  .card-cta { transition: background 120ms ease, color 120ms ease; }
   .card-cta::after { transition: transform 120ms ease; }
   .card:hover .card-cta::after { transform: translateX(3px); }
 }
@@ -498,6 +524,7 @@ footer { padding-top: var(--gap); display: flex; flex-direction: column; gap: 0.
 .footer-note { font-size: 0.875rem; color: var(--steel-dim); max-width: 60ch; }
 
 @media (prefers-reduced-motion: no-preference) {
-  a, .card { transition: color 120ms ease, border-color 120ms ease, background 120ms ease, transform 120ms ease; }
-  .card:hover { transform: translateY(-2px); }
+  a, .card { transition: color 120ms ease, border-color 120ms ease, background 120ms ease, transform 140ms ease, box-shadow 140ms ease; }
+  .card:hover { transform: translateY(-3px); }
+  .card:active { transform: translateY(-1px); }
 }

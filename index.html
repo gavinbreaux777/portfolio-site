@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><!-- your name --> — Software developer</title>
+<title>Gavin Breaux — Software developer</title>
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -24,10 +24,12 @@
     <h1>Solving problems <em>through software</em>, not causing problems <em>from software</em></h1>
 
     <p class="deck">
-      A mobile tire business had run nearly a year with less than a job a week.
-      I built the website, rebuilt the advertising, made every call traceable to
-      a source and an outcome, and then consolidated five manual systems into one
-      simple, internal tool.
+      A mobile tire business had run nearly a year on less than a job a week, with
+      no website and no way to tell which calls were worth paying for. Fixing that
+      meant building the site first, then the measurement behind it. As calls and
+      revenue grew, the bottleneck moved to the paperwork behind every job &mdash;
+      six manual systems to reconcile. Nothing off the shelf met the owner's
+      needs, so I wrote the web app the business now runs on daily.
     </p>
 
     <div class="byline">
@@ -40,17 +42,17 @@
     <div class="spec">
       <span class="spec-val">10&times;</span>
       <span class="label">Ad spend increase</span>
-      <span class="spec-note">Owner-initiated, on measurement I built</span>
+      <span class="spec-note">Based on increased calls and revenue, now traceable to source</span>
     </div>
     <div class="spec">
-      <span class="spec-val">5&rarr;1</span>
-      <span class="label">Systems consolidated</span>
-      <span class="spec-note">Into a single job record</span>
+      <span class="spec-val">6&rarr;1</span>
+      <span class="label">Manual systems replaced by software I wrote</span>
+      <span class="spec-note">Call-source tracking, quoting, invoicing, inventory, expenses, accounts &mdash; one job record</span>
     </div>
     <div class="spec">
-      <span class="spec-val">Expandable</span>
-      <span class="label">1 User now, no cost to add more</span>
-      <span class="spec-note">Live app, no staging environment</span>
+      <span class="spec-val">Daily</span>
+      <span class="label">Production use of that app</span>
+      <span class="spec-note">Built and operated solo, against a live database</span>
     </div>
   </div>
 
@@ -60,9 +62,11 @@
       <span class="label">Chronological Steps</span>
     </div>
     <div class="body-col">
-      <h2>Linear development</h2>
+      <h2>From no calls to custom software</h2>
       <p>
-        This wasn't a list of separate engagements. It was one problem broken down into actionable steps.
+        This wasn't a list of separate engagements. It was one problem followed
+        in order &mdash; and each step narrowed what the business actually
+        needed built.
       </p>
 
       <div class="arc">
@@ -76,7 +80,7 @@
         <div class="arc-step">
           <span class="arc-n">02</span>
           <span class="arc-text">
-            <strong>Built the landing page, rebuilt the advertising</strong>
+            <strong>Built customer-facing site, rebuilt the advertising</strong>
             <span>Google Ads search and Performance Max, plus Local Services Ads.</span>
           </span>
         </div>
@@ -90,15 +94,15 @@
         <div class="arc-step">
           <span class="arc-n">04</span>
           <span class="arc-text">
-            <strong>Proof unlocked spend</strong>
-            <span>From reluctance at $300/month to over ten times that across channels, in one to two months.</span>
+            <strong>Measurement unlocked spend &mdash; and the business grew with it</strong>
+            <span>From reluctance to double the budget, to over 10&times; the original spend in one to two months.</span>
           </span>
         </div>
         <div class="arc-step">
           <span class="arc-n">05</span>
           <span class="arc-text">
-            <strong>Consolidated the manual systems</strong>
-            <span>Attribution, quoting, invoicing, inventory, expenses, and accounts into one record.</span>
+            <strong>Created the software the business now runs on</strong>
+            <span>No off-the-shelf tool fit the workflow the owner wanted, so I built one: a Cloudflare Workers and D1 web app putting call-source tracking, quoting, invoicing, inventory, expenses, and fleet accounts on a single job record. In daily production use.</span>
           </span>
         </div>
       </div>
@@ -114,20 +118,22 @@
       <h2>The work in detail</h2>
       <div class="cards">
         <a class="card" href="attribution.html">
-          <span class="label">Measurement</span>
+          <span class="label">First &middot; Measurement</span>
           <h3>Getting calls and tracking their source</h3>
           <p>
-            Joining GA4, Google Ads, and Local Services Ads to job outcomes &mdash;
-            and the budget decision that followed.
+            Joining GA4, Google Ads, and Local Services Ads to job outcomes.
+            What made spend defensible &mdash; and surfaced where the real
+            constraint was.
           </p>
           <span class="card-cta">Read case study</span>
         </a>
         <a class="card" href="tooling.html">
-          <span class="label">Software</span>
-          <h3>Five distributed systems consolidated to one clean web app</h3>
+          <span class="label">Then &middot; Custom software &middot; Workers, D1, R2</span>
+          <h3>The web app the business now runs on</h3>
           <p>
-            A web app built for simple integrated quoting, invoicing, inventory,
-            expenses, and fleet accounts. In daily production use.
+            Quoting, invoicing, inventory, expenses, and fleet accounts on one
+            job record. Schema design, 25+ migrations against live data, and an
+            integration suite that gates every deploy.
           </p>
           <span class="card-cta">Read case study</span>
         </a>
@@ -141,9 +147,10 @@
       <span class="label">Components</span>
     </div>
     <div class="body-col">
-      <h2>Infrastructure and operations</h2>
+      <h2>Shipping and running the app</h2>
       <p>
-        The systems the business runs on, and what I own on each.
+        Writing the app is half of it. The rest is everything that keeps a live
+        system safe to change.
       </p>
       <ul class="plain">
         <li>
@@ -152,6 +159,11 @@
         <li>
           <strong>Data layer.</strong> D1 schema design, migrations, and backups
           behind quoting, invoicing, inventory, expenses, and fleet accounts.
+        </li>
+        <li>
+          <strong>Safe deploys.</strong> An integration suite against real D1 that
+          must pass before merge, migrations written to be additive, and a hook
+          that blocks writes to the production database without a fresh backup.
         </li>
         <li>
           <strong>GitHub.</strong> Organization setup, repositories, and deploy
