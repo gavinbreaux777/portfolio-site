@@ -135,6 +135,10 @@ code {
   gap: 0.6rem 1.25rem; padding-bottom: 1.75rem;
 }
 
+/* Subtitle riding directly under an h1 — h1 has margin:0, so the gap has to
+   come from here. Tighter than .deck's, since this reads as part of the title. */
+h1 + .label { display: block; margin-top: 0.9rem; color: var(--steel); }
+
 .deck {
   font-size: clamp(1.03rem, 1.8vw, 1.15rem);
   color: var(--steel);
@@ -501,7 +505,19 @@ td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; whit
   .card:hover .card-cta::after { transform: translateX(3px); }
 }
 
-/* ---------- nav / footer ---------- */
+/* The card CTA shape reused outside a card — as a standalone button. Needs its
+   own hover, since there's no parent .card to trigger the fill, and
+   margin-top:auto is meaningless without the flex parent. Deliberately a
+   separate class rather than a bare `a.card-cta`, so it can't reach inside a
+   .card and collapse the bottom-alignment that keeps CTAs in a row level. */
+.cta-standalone {
+  margin-top: 0;
+  text-decoration: none;
+}
+.cta-standalone:hover {
+  background: var(--amber);
+  color: var(--ground-raised);
+}
 
 /* Tab bar. Sticky so the switch between case studies is always in
    reach; the active tab is carried by an amber underline riding the
