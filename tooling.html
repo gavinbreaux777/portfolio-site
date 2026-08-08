@@ -22,36 +22,46 @@
       <span class="label">In production</span>
     </div>
 
-    <h1>Five manual systems, one record</h1>
+    <h1>Five manual systems<br> &rarr; one simple web-app</h1>
 
     <p class="deck">
       Quoting, invoicing, tire inventory, expenses, and customer accounts were
-      tracked in five disconnected places. They were five views of the same
+      tracked in five disconnected places (or not at all). They were five views of the same
       event. I scoped and shipped an app that models it once.
     </p>
 
     <div class="byline">
-      <span class="label"><span class="ph">Your Name</span></span>
+      <span class="label"><span class="ph">Gavin Breaux</span></span>
       <span class="label">Software developer</span>
-      <span class="label"><span class="ph">contact</span></span>
+      <span class="label"><span class="ph">gavinbreaux777@yahoo.com</span></span>
     </div>
   </header>
 
+  <figure class="shot shot-lead">
+    <a href="assets/Images/jobs.png" target="_blank" rel="noopener">
+      <img src="assets/Images/jobs.png" alt="The app's Jobs tab: a searchable, sortable list of job cards, each showing the request, call time, tire category, and status with the reason a job was voided." loading="lazy" decoding="async">
+    </a>
+    <figcaption>
+      The jobs list &mdash; the spine of the app. Every call becomes a record
+      here.
+    </figcaption>
+  </figure>
+
   <div class="spec-strip">
     <div class="spec">
-      <span class="spec-val">24</span>
+      <span class="spec-val">25&plus;</span>
       <span class="label">Migrations</span>
       <span class="spec-note">Applied to live data, additive only</span>
     </div>
     <div class="spec">
-      <span class="spec-val">165</span>
+      <span class="spec-val">350&plus;</span>
       <span class="label">Integration tests</span>
       <span class="spec-note">Real D1, no mocks</span>
     </div>
     <div class="spec">
-      <span class="spec-val">2</span>
-      <span class="label">Daily users</span>
-      <span class="spec-note">No staging environment</span>
+      <span class="spec-val">Expandable</span>
+      <span class="label">1 User now, no cost to add more</span>
+      <span class="spec-note">Live app, no staging environment</span>
     </div>
   </div>
 
@@ -75,9 +85,7 @@
       </p>
       <p>
         The tool started as tire inventory and grew into everything above as the
-        real workflow became clear. The name stuck from the first version, which
-        is honest about how it happened &mdash; the scope was discovered by using
-        it, not planned up front.
+        real workflow became clear.
       </p>
     </div>
   </section>
@@ -90,29 +98,14 @@
     <div class="body-col">
       <h2>How this was built</h2>
       <p>
-        This was built with AI assistance, in Claude Code. My work was the
-        product side: identifying that five systems were one event, specifying
-        the domain rules from how the business actually runs, deciding what
-        belonged in the tool and what didn't, and operating it in production
-        while the owner used it daily.
+        This was built with Claude Code, showcasing AI-assisted development 
+        capabilities and workflow. My work was present largely in problem definition,
+        data modeling, architecture, user experience, and operational decisions - deciding
+        webapp backend, database structure and where to host it, how to make changes 
+        safely with the system in production, necessary tests, anything the agent was
+        unsure about, and interfacing with the end user. I don't see this as a lack of skill but rather a willingness to use
+        the right tool for the job, and embrace a future of accelerated development.
       </p>
-      <p>
-        The architecture and implementation were AI-generated under that
-        direction. I'm stating that plainly because it's how the work happened,
-        and because shipping a system a business depends on &mdash; and keeping it
-        running &mdash; is the part that transfers.
-      </p>
-      <div class="note">
-        <span class="label">What I'd want to be asked about</span>
-        <p>
-          The domain modeling and the operational decisions: why a quote number
-          is assigned to every job but an invoice number only at completion, why
-          voiding a completed job restocks inventory and voiding a quote doesn't,
-          and what it's like to run schema changes against a database a business
-          is actively using. Those I can speak to. The deeper implementation
-          internals I'd be learning alongside you.
-        </p>
-      </div>
     </div>
   </section>
 
@@ -122,7 +115,7 @@
       <span class="label">System</span>
     </div>
     <div class="body-col">
-      <h2>What it does</h2>
+      <h2>The app</h2>
       <ul class="plain">
         <li><strong>Jobs</strong> &mdash; one record from first call through quote, completion, and paid invoice.</li>
         <li><strong>Quotes and invoices</strong> &mdash; generated as documents from the job record, with per-line price overrides.</li>
@@ -131,22 +124,116 @@
         <li><strong>Fleet accounts</strong> &mdash; repeat commercial customers with payment terms.</li>
         <li><strong>Job photos</strong> &mdash; damage and before/after proof, stored in R2.</li>
       </ul>
-      <p>
-        Cloudflare Workers serving both the API and the frontend, D1 for
-        relational data, R2 for images. Three runtime dependencies, no build
-        step. Passkey authentication with invite-gated registration &mdash; there
-        are two legitimate users and there always will be.
-      </p>
+      <div class="split split-figure">
+        <p>
+          Cloudflare Workers serving both the API and the frontend, D1 for
+          relational data, R2 for images. Three runtime dependencies, no build
+          step, no frameworks. Passkey authentication with invite-gated
+          registration: one daily user today, and adding the next one is issuing
+          an invite code rather than a change to the app.
+        </p>
+        <figure class="shot">
+          <a href="assets/Images/tire inventory.png" target="_blank" rel="noopener">
+            <img src="assets/Images/tire inventory.png" alt="The app's Look up tab: a running stock count above a searchable list of tire sizes, each row showing the quantity currently in stock." loading="lazy" decoding="async">
+          </a>
+          <figcaption>
+            Inventory lookup. Stock counts move through exactly one path
+            &mdash; completing a job &mdash; so the number always has an
+            invoice behind it.
+          </figcaption>
+        </figure>
+      </div>
     </div>
   </section>
 
   <section>
     <div class="rail">
       <span class="rail-num">&sect; 04</span>
+      <span class="label">Decisions</span>
+    </div>
+    <div class="body-col">
+      <h2>Some details</h2>
+      <p>
+        Some interesting decisions made along the way, and why they were made.
+      </p>
+
+      <h3>Mobile and Desktop</h3>
+      <p>
+        The app is designed to be used in the field, on a phone, and in a hurry. It needed to be simple - even
+        when a customer isn't waiting on a quote, the end user does not want a complicated interface that makes
+        their job harder. This meant a mobile-firt design, with a simple interface that could also be used on a
+        desktop PC for more intensive work like reporting and mass data entry.
+      </p>
+      
+      <h3>Authentication</h3>
+      <p>
+        The end user of the app wants the simplest possible interface and needed a simple access
+        and authentication model that allowed continuous updates without any turbulence. Continuously 
+        logging in or dealing with constant 2FA does not fit. Passkeys and signed-cookie browser sessions
+        were the right answer. A validated authentication library was implemented which only creates new 
+        session secrets and distributes session cookies when prompted by a validated user, which then generates
+        a 6 digit code the new user must reproduce within 15 minutes to be granted access. This system creates
+        a simple and secure authentication model that is easy to maintain for the end user.
+      </p>
+
+      <h3>Photos are the one thing not in D1</h3>
+      <p>
+        Image bytes go to object storage (R2); only metadata goes in D1. Rows there
+        cap around a megabyte, and that database is the billing spine &mdash;
+        blobs would bloat every backup of the records the business actually
+        depends on. A lookup table in D1 links images to jobs.
+      </p>
+
+      <h3>Ads importing</h3>
+      <p>
+        Google Ads and Local Service Ads both have exports that contain conversions:
+        Clicks that became calls in Google Ads, and "Leads" (calls) in Local Service Ads.
+        The export for each is csv format, Local Service Ads containing phone number and time,
+        Google Ads containing category and time. The app accepts both into respective D1 tables,
+        and a query joins them to jobs by phone number and timestamp from LSA first, then by 
+        category and timestamp from Google Ads. The result is each job in the list receiving 
+        an attribution record of the call source, without manual entry. The app can then report 
+        the number of calls and jobs by source, and the owner can make informed decisions about ad spend.
+      </p>
+
+      <h3>Dashboards</h3>
+      <p>
+        A lot of good and useful information is stored in the database, but the owner doesn't want to make 
+        SQL queries to get it. An in-app dashboard was built to show important metrics the owner needs to 
+        make decisions, like number of calls, jobs, revenue, expenses, inventory, etc. The dashboard is
+        built as simple charts formed with SQL queries and is easily modified and deployed with the app.
+      </p>
+
+      <div class="shot-pair">
+        <figure class="shot shot-zoom">
+          <a href="assets/Images/dashboard calls.png" target="_blank" rel="noopener">
+            <img src="assets/Images/dashboard calls.png" alt="The dashboard's Calls tab: a line chart of calls by day of week, broken out by tire category, with a total line and filters for call source and date range." loading="lazy" decoding="async">
+          </a>
+          <figcaption>
+            Calls by day of week, filtered by category and source &mdash; the
+            view behind decisions about when and where to spend.
+          </figcaption>
+        </figure>
+        <figure class="shot shot-zoom">
+          <a href="assets/Images/dashboard revenue.png" target="_blank" rel="noopener">
+            <img src="assets/Images/dashboard revenue.png" alt="The dashboard's Revenue tab: a stacked bar chart of revenue by month broken out by job category, above collapsed panels for total quoted and expenses by month." loading="lazy" decoding="async">
+          </a>
+          <figcaption>
+            Revenue by month by category. Figures redacted; the categories are
+            the same job types the intake form records.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 05</span>
       <span class="label">Operating</span>
     </div>
     <div class="body-col">
-      <h2>Running it while it's in use</h2>
+      <h2>Developing while it's in use</h2>
       <p>
         The app went into daily use early and stayed there. Every schema change
         after the first week had to apply to a database with real rows in it,
@@ -155,11 +242,23 @@
         the wrong number, sent to a customer.
       </p>
       <p>
-        Practically that meant: 24 migrations written to be additive rather than
+        Practically that meant: every migration written to be additive rather than
         destructive, a full database export before every production change, and
         an automated test suite that has to pass before anything merges. Merging
         deploys automatically, so that test run is the last gate before the
         business is using the change.
+      </p>
+      <p>
+        The backup rule is enforced by a hook rather than by memory. Any command
+        that would write to the production database is blocked unless a fresh
+        export already exists on disk &mdash; and the refusal names the export
+        command to run. Read-only queries and anything pointed at the 
+        local database pass untouched.
+      </p>
+      <p>
+        It's committed to the repository, not kept in my own machine's config.
+        A safeguard that only exists where it was first written protects one
+        person, which isn't what it's for.
       </p>
       <p>
         Rows are never hard-deleted. A mis-entered purchase is reversed and
@@ -171,14 +270,10 @@
   </section>
 
   <footer>
-    <span class="label">End of case study</span>
-    <p class="footer-note">
-      Figures are structural and drawn from the repository: migration count,
-      test count, dependency count. No business performance metrics appear here.
-    </p>
-    <p class="footer-note">
-      <span class="ph">Add: link to repo if public, or live app.</span>
-    </p>
+    <div class="byline">
+      <span class="label"><span class="ph">Gavin Breaux</span></span>
+      <span class="label"><span class="ph">gavinbreaux777@yahoo.com</span></span>
+    </div>
   </footer>
 
 </div>

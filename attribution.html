@@ -19,24 +19,56 @@
     <div class="stamp">
       <span class="label">Case study</span>
       <span class="label">Summer 2026</span>
-      <span class="label">Mobile truck tire service</span>
+      <span class="label">Mobile tire service</span>
     </div>
 
-    <h1>Making a phone call measurable</h1>
+    <h1>Closed-loop spend scaling</h1>
 
     <p class="deck">
-      A roadside truck tire business had run for almost a year with barely a job
-      a day. Three ad platforms each reported a fraction of what was happening.
+      A roadside tire business had run for almost a year with less than a job
+      a day. Ad spend needed to increase, but increasing without data was hard. Three ad platforms each reported a fraction of what was happening.
       None could answer the only question that mattered: did the call turn into
       work?
     </p>
 
     <div class="byline">
-      <span class="label"><span class="ph">Your Name</span></span>
+      <span class="label"><span class="ph">Gavin Breaux</span></span>
       <span class="label">Software developer</span>
-      <span class="label"><span class="ph">contact</span></span>
+      <span class="label"><span class="ph">gavinbreaux777@yahoo.com</span></span>
     </div>
   </header>
+
+  <figure class="platforms">
+    <div class="platform-row">
+      <div class="platform">
+        <img src="assets/Images/GA4.png" alt="A Google Analytics 4 reporting view: a channel-group traffic chart above a table of users and sessions by channel." loading="lazy" decoding="async">
+        <span class="platform-cap">
+          <strong>GA4</strong>
+          Sessions and call-button taps on the site &mdash; but a tap it
+          often couldn't trace back to a source.
+        </span>
+      </div>
+      <div class="platform">
+        <img src="assets/Images/Google-Ads-Overview.webp" alt="The Google Ads campaigns screen, showing the campaign list and a clicks-over-time chart." loading="lazy" decoding="async">
+        <span class="platform-cap">
+          <strong>Google Ads</strong>
+          Calls tied to campaigns and keywords, and blind to every call it
+          didn't serve.
+        </span>
+      </div>
+      <div class="platform">
+        <img src="assets/Images/LSA-dashboard.png" alt="A Google Local Services Ads leads table listing calls by job type, charge status, and date received." loading="lazy" decoding="async">
+        <span class="platform-cap">
+          <strong>Local Services Ads</strong>
+          A separate console of leads, joining to neither of the other two.
+        </span>
+      </div>
+    </div>
+    <figcaption>
+      Three platforms, three partial views of the same phone call.<br>
+      <span class="provenance">Screenshots are Google's own product imagery, not this account's data.</span>
+    </figcaption>
+  </figure>
 
   <div class="spec-strip">
     <div class="spec">
@@ -52,7 +84,7 @@
     <div class="spec">
       <span class="spec-val">1&ndash;2 mo</span>
       <span class="label">To that decision</span>
-      <span class="spec-note">From reluctance at $300/month</span>
+      <span class="spec-note">From reluctance at 2&times; spend</span>
     </div>
   </div>
 
@@ -64,15 +96,14 @@
     <div class="body-col">
       <h2>Almost no calls, in the season that should have been busiest</h2>
       <p>
-        Mobile tire service for semi and commercial trucks &mdash; roadside work,
-        where a stranded driver searches once and calls whoever answers. Demand
-        isn't the constraint. Being findable at the moment of the search is.
+        Mobile commercial tire service &mdash; where a stranded driver searches 
+        once and calls whoever answers. Demand isn't the constraint. Being findable
+        at the moment of the search is.
       </p>
       <p>
-        The owner rarely did more than a job a day. It was summer, which ruled
-        out seasonality. Ads pointed at a Google Business Profile; there was no
-        website, so there was nowhere to place conversion tracking and no
-        landing experience to tune.
+        The owner rarely did more than a job a day. It should have been the busy season.
+        Ads pointed at a Google Business Profile; there was no website for credibility 
+        or to place conversion tracking and no landing experience to tune.
       </p>
       <p class="pull">
         Every measurement decision that followed depended on first having
@@ -108,7 +139,7 @@
         <div class="arc-step">
           <span class="arc-n">03</span>
           <span class="arc-text">
-            <strong>Found no unified tracking</strong>
+            <strong>No unified tracking</strong>
             <span>Three platforms reporting separately, in incompatible formats, with no way to see a call end to end.</span>
           </span>
         </div>
@@ -122,8 +153,8 @@
         <div class="arc-step">
           <span class="arc-n">05</span>
           <span class="arc-text">
-            <strong>Used it to move the budget</strong>
-            <span>Cut spend on traffic that didn't convert; pushed budget toward what did.</span>
+            <strong>Used it to increase ad budget</strong>
+            <span>Cut spend on traffic that didn't convert; increased spend on traffic that did.</span>
           </span>
         </div>
       </div>
@@ -157,12 +188,11 @@
       </div>
 
       <p>
-        Left alone this produces two failures at once: the same call counted
-        twice by two systems, and calls missing from all of them. Neither error
-        is visible from inside any one platform &mdash; the dashboards look fine.
+        Left alone this produces two failures: the same call counted
+        twice by two systems, and...
       </p>
       <p>
-        And the deeper gap: all three measure <strong>calls</strong>. The
+        The deeper gap: all three measure <strong>calls</strong>. The
         business makes money on <strong>jobs</strong>. A cost-conscious owner
         asked to spend more isn't asking how many phones rang.
       </p>
@@ -175,50 +205,58 @@
       <span class="label">Build</span>
     </div>
     <div class="body-col">
-      <h2>One row per call</h2>
-      <p>
-        Built in Google Sheets, fed by a Google Form &mdash; a deliberate choice
-        over anything more sophisticated. The outcome data could only come from
-        the person answering the phone, so adoption was the binding constraint.
-        A tool the owner fills in between jobs beats a better one he abandons.
-      </p>
+      <h2>End to end call tracking</h2>
+
+      <div class="split">
+        <p>
+          Began in Google Sheets, fed by a simple Google Form &mdash; a deliberate
+          choice over anything more sophisticated. The outcome data could only come
+          from the person answering the phone, so adoption was the binding
+          constraint. A tool the owner fills in between jobs beats a better one he
+          abandons.
+        </p>
+        <figure class="shot shot-zoom">
+          <a href="assets/Images/Call Forms.png" target="_blank" rel="noopener">
+            <img src="assets/Images/Call Forms.png" alt="The Call Form responses spreadsheet: one row per call, with columns for call timestamp, call time, call day, call category, request description, whether the job was done, and why it was not." loading="lazy" decoding="async">
+          </a>
+          <figcaption>
+            One row per call, and the two columns no ad platform could fill:
+            whether it became work, and if not, why.
+          </figcaption>
+        </figure>
+      </div>
 
       <div class="tag">
         <div class="tag-head">
-          <span class="tag-id">Design &middot; Joining three sources to an outcome</span>
+          <span class="tag-id">Joining three sources to an outcome</span>
           <span class="chip chip-hold">Owner-entered data</span>
         </div>
         <div class="tag-body">
           <div class="beat">
             <span class="label">Join key</span>
             <p>
-              Phone number normalized to ten raw digits. Each platform formats
-              numbers differently, so matching on the raw string silently drops
-              rows and produces a report that looks complete. Stripping to digits
-              turned three incompatible exports into one joinable key.
+              Normalize reported phone number to LSA format.
             </p>
           </div>
           <div class="beat">
             <span class="label">Aggregation</span>
             <p>
-              <code>COUNTIFS</code> and <code>SUMIFS</code> into Outcomes and
-              Channels tabs, so calls could be read by date, by source, and by
-              what they became. Charts built on that data made gaps and trends
+              Aggregation by date, source, type, and outcome. Charts built on that data made gaps and trends
               visible directly.
             </p>
           </div>
           <div class="beat">
-            <span class="label">Self-extension</span>
+            <span class="label">Source Attribution</span>
             <p>
-              <code>ARRAYFORMULA</code> and open chart ranges, so new form
-              submissions extend the report automatically. Anything needing a
-              formula dragged down would have gone stale within a week.
+              LSA calls are exported with a time and phone number, Google Ads calls with a 1-hour time range and ad category. 
+              This is enough - start with LSA number and time matching, fallback to Google Ads category and time matching =
+              reliable attribution, especially for relatively low call volume.
             </p>
           </div>
           <div class="beat">
             <span class="label">Outcome</span>
             <p>
-              The owner recorded what the call was and whether it became work
+              The owner records what the call was and whether it became work
               &mdash; the same details he still records on job forms today. That
               column is the one thing no platform could supply.
             </p>
@@ -229,7 +267,7 @@
       <div class="note">
         <span class="label">Known limitation</span>
         <p>
-          Outcome data is self-reported and hand-entered, so it carries the usual
+          Call data is self-reported and hand-entered, so it carries the usual
           risks. It was reconciled against platform call counts to catch gaps,
           but it isn't instrumented ground truth. It was accurate enough to make
           budget decisions with, which was the bar it needed to clear.
@@ -244,15 +282,15 @@
       <span class="label">Result</span>
     </div>
     <div class="body-col">
-      <h2>The measurement is what unlocked the spend</h2>
+      <h2>Measurement unlocked the spend</h2>
       <p>
-        The owner was reluctant to commit $300 a month. Within one to two months
+        The owner was reluctant to double his ad spend. Within one to two months
         &mdash; call volume visibly climbing, each call traceable to a source and
         an outcome &mdash; he was spending more than ten times that across
         channels, confidently.
       </p>
       <p class="pull">
-        An owner who won't spend $300 because he can't see what it returns isn't
+        An owner who won't increase ad spend because he can't see what it returns isn't
         being stubborn. He's responding correctly to missing information.
       </p>
       <p>
@@ -260,16 +298,6 @@
         evidence than a figure would be. Nobody multiplies their ad spend tenfold
         on a channel they can't see returning.
       </p>
-
-      <div class="note">
-        <span class="label">On what isn't claimed here</span>
-        <p>
-          No revenue or profit figures appear on this page. The business had no
-          measured baseline before this engagement, so any before-and-after
-          comparison would be invented. The prior state is the owner's
-          characterization; the spend increase is a decision I observed.
-        </p>
-      </div>
     </div>
   </section>
 
@@ -282,16 +310,14 @@
       <h2>The problem it surfaced next</h2>
       <p>
         Better measurement produces better problems. With calls classified by
-        outcome, the leak became visible: budget meant for semi tire work was
-        going to passenger vehicle traffic, and to searchers who landed on the
-        page and left because it didn't show what they were looking for. Mostly
-        that meant no call at all &mdash; spend with nothing on the other end.
+        outcome, leaks became visible: some calls measured as "conversions" by Google Ads 
+        weren't converting to jobs, and searchers who landed on the
+        page and left because it didn't show what they were looking for.
       </p>
       <p>
-        Active work: tightening phrase-match targeting and extending negative
-        keyword lists against a 33-keyword positive set, plus landing page
-        changes so the page answers what the search actually asked. Then watching
-        the outcome column to confirm the mix shifts rather than assuming it did.
+        Resulting work: tightening keyword targeting, plus landing page
+        changes to increase call-rate. Then watching the outcome to
+        confirm improvement instead of guessing.
       </p>
     </div>
   </section>
@@ -308,7 +334,7 @@
         <li>Call attribution in a Google Form feeding a spreadsheet</li>
         <li>Invoices in separate third-party software</li>
         <li>Tire inventory counted manually</li>
-        <li>Quotes written by hand, unlinked to the job they became</li>
+        <li>Quotes calculated by hand, unlinked to the job they became</li>
         <li>No expense tracking and no customer accounts at all</li>
       </ul>
       <p>
@@ -321,12 +347,10 @@
   </section>
 
   <footer>
-    <span class="label">End of case study</span>
-    <p class="footer-note">
-      Figures here are limited to what's directly observable: sources joined,
-      relative spend increase, timeframe. Business performance figures are
-      deliberately omitted.
-    </p>
+    <div class="byline">
+      <span class="label"><span class="ph">Gavin Breaux</span></span>
+      <span class="label"><span class="ph">gavinbreaux777@yahoo.com</span></span>
+    </div>
   </footer>
 
 </div>
