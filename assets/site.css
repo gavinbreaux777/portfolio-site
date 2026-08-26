@@ -345,21 +345,29 @@ pre code { background: none; border: none; padding: 0; font-size: inherit; word-
   padding: 0.5rem;
 }
 
-/* Homepage app shots: two UI screenshots side by side, framed portrait so
-   they read as app windows rather than wide banners. */
+/* Homepage shots: four screenshots in a 2x2 grid. Fixed two columns rather
+   than auto-fit, so the grid stays square instead of reflowing to 3+1 or a
+   single row at wide viewports. Collapses to one column on narrow screens. */
 .shot-row {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  display: grid; grid-template-columns: repeat(2, 1fr);
   gap: 1.1rem; align-items: start;
-  /* Slimmer than the 58rem wrapper — narrowing the columns is half of what
-     makes the frames read as tall. Viewport cap avoids h-scroll. */
-  width: min(48rem, 100vw - 2rem);
+  width: min(52rem, 100vw - 2rem);
   margin: 0 auto var(--gap);
+}
+@media (max-width: 34rem) {
+  .shot-row { grid-template-columns: 1fr; }
 }
 /* cover, not contain: these are list views, so a top-anchored crop keeps
    the header and first rows — the legible part — and drops the tail. The
    full image is one click away, so nothing is actually lost. */
 .shot-row .shot img {
   height: 17rem; object-fit: cover; object-position: top center;
+}
+/* The customer site shot is 1.24 aspect against ~2.5 for the three app
+   shots. A top-anchored cover crop in the shared frame would show only its
+   header, so it letterboxes instead and keeps the whole page visible. */
+.shot-row .shot-tall img {
+  object-fit: contain; background: #FFFFFF; padding: 0.4rem;
 }
 
 /* Supporting shot: the customer-facing site is a step on the way to the
