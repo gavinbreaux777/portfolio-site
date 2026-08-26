@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Market sizing — case study — Gavin Breaux</title>
+<meta name="description" content="How much roadside work exists, and how many fleets are nearby — a Python pipeline over federal HPMS and FMCSA data, rendered as a static map with no API layer.">
+<link rel="stylesheet" href="../../../assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="sitenav">
+    <a href="../../../">Home</a>
+    <a href="../../../resume/">Resume</a>
+    <a href="../../" aria-current="page">Side Projects</a>
+  </nav>
+
+  <header class="masthead">
+    <div class="stamp">
+      <span class="label">Case study</span>
+      <span class="label">Python &middot; GeoPandas &middot; MapLibre &middot; Workers</span>
+      <span class="label">Live</span>
+    </div>
+
+    <h1>How much work is out there?</h1>
+
+    <p class="deck">
+      The attribution work told the owner where his calls came from. The app
+      told him what happened to them. Then he asked something neither could
+      answer: how much roadside work is out there at all, and how much of it does
+      he need to win for the numbers to work? Nobody publishes that. So I
+      estimated it, and built a second tool to find the fleets behind it.
+    </p>
+
+    <div class="byline">
+      <span class="label"><a href="https://traffic.breauxs-roadside.com" target="_blank" rel="noopener">traffic.breauxs-roadside.com</a></span>
+      <span class="label">Corridors public &middot; Carriers gated</span>
+    </div>
+  </header>
+
+  <figure class="shot shot-lead">
+    <a href="../../../assets/Images/corridors-statewide.png" target="_blank" rel="noopener">
+      <img src="../../../assets/Images/corridors-statewide.png" alt="The Corridors tab: a map of Mississippi with every federal-aid highway drawn as a colored line, dark red for corridors carrying 9,000 or more tractor-trailers per day down through orange and pale yellow for under 150. I-20, I-55, and I-10 read as the heaviest lines on the map." loading="lazy" decoding="async">
+    </a>
+    <figcaption>
+      Mississippi ranked by heavy-truck exposure. The dark lines carry the
+      trucks, so they should also carry the blowouts.
+    </figcaption>
+  </figure>
+
+  <div class="spec-strip">
+    <div class="spec">
+      <span class="spec-val">54,732&rarr;2,747</span>
+      <span class="label">Raw segments to map sections</span>
+      <span class="spec-note">10,879 mainline miles, cut where the traffic changes</span>
+    </div>
+    <div class="spec">
+      <span class="spec-val">4.9%</span>
+      <span class="label">Holdout error, down from 18.0%</span>
+      <span class="spec-note">R&sup2; 0.833 &rarr; 0.989 after one measured correction</span>
+    </div>
+    <div class="spec">
+      <span class="spec-val">156</span>
+      <span class="label">Lines of server-side code</span>
+      <span class="spec-note">An auth gate. There is no API layer anywhere in the project</span>
+    </div>
+  </div>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 01</span>
+      <span class="label">Origin</span>
+    </div>
+    <div class="body-col">
+      <h2>A missing denominator</h2>
+      <p>
+        Advertising decisions had gotten better but they'd hit a ceiling. The
+        owner knew what a call cost him and what it earned. He had no idea how
+        many calls were out there to begin with. Was he getting two percent of
+        his market, or forty? Those are different businesses, and they call for
+        different plans.
+      </p>
+      <p class="pull">
+        No dataset counts tire blowouts. There is no authority to look it up
+        from, no trade association publishing it, no way to buy it.
+      </p>
+      <p>
+        So the tool doesn't try to count them. It models exposure instead:
+        truck miles travelled from federal datasets, on the assumption that blowouts
+        scale with truck-miles travelled. This leaves room for different models 
+        based on different blowout rate assumptions with a source of truth to base it all on. 
+        That was the question on the table: How much work is out there, and how do 
+        we capture it?
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 02</span>
+      <span class="label">Corridors</span>
+    </div>
+    <div class="body-col">
+      <h2>From 54,732 fragments to a ranking</h2>
+      <p>
+        The input is FHWA's HPMS release, the federal highway inventory. It
+        reports traffic counts and vehicle classification per road segment, but
+        it arrives fragmented by arbitrary measurement points, so
+        a single interstate shows up as thousands of disconnected pieces.
+      </p>
+      <p>
+        A six-stage Python pipeline turns that into something you can look at.
+        Each stage is its own module and runs to a named checkpoint. Before
+        handing off, each one checks its own invariants: mileage conserved, no
+        double inventory, data integrity maintained.
+      </p>
+      <ul class="plain">
+        <li><strong>Extract</strong> &mdash; keep the mainline highways and drop everything else. HPMS says what each road <em>is</em> (mainline, ramp, frontage) and how it's signed (Interstate, US, state route).</li>
+        <li><strong>Metrics</strong> &mdash; truck-miles per segment. Nulls treated as missing data, false zeros located.</li>
+        <li><strong>Corridors</strong> &mdash; put each road back together in order. I&#8209;20 arrives as 1,822 separate rows, cut at arbitrary measurement points. Sorting by mileposts or counties failed on inconsistencies. What works is the shape itself: match the end coordinate of one piece to the start coordinate of the next and chain them. Once chained, I&#8209;20's mileposts run strictly west to east, which is how I know it worked.</li>
+        <li><strong>Interpolate and estimate</strong> &mdash; fill short interior gaps, then estimate the rest through a donor chain of past data.</li>
+        <li><strong>Aggregate</strong> &mdash; cut the chained corridors into sections wherever reported traffic changes by more than the configured tolerance.</li>
+        <li><strong>Export</strong> &mdash; write the map out four times, once per section size, as four GeoJSON files. Pre-cutting them here means the dropdown just swaps files and the browser never has to re-cut anything.</li>
+      </ul>
+
+      <h3>Granularity that follows the data</h3>
+      <p>
+        This control sets how long each colored piece of road on the map is. It
+        started out as a target: merge neighbors until sections average, say, ten
+        miles. That erases the thing the map is for. Put a 3-mile stretch
+        carrying 4,000 trucks a day next to a 7-mile stretch carrying 200, merge
+        them to hit the target, and the map reports 1,340 across all ten miles.
+        The busy stretch now looks quiet, the quiet stretch looks busy, and the
+        hot spot is gone.
+      </p>
+      <p>
+        So it splits on traffic instead of length. Wherever volume changes by
+        more than the percentage you pick, the road gets cut there. That 3-mile
+        stretch stays its own section because it differs from its neighbor by far
+        more than 15%. Length stops being a goal and becomes a result: busy areas
+        break into many short sections, uniform rural highway stays in long ones.
+        Moving the slider makes the map coarser or finer without ever averaging
+        away a difference that matters.
+      </p>
+
+      <figure class="shot">
+        <a href="../../../assets/Images/corridors-selection.png" target="_blank" rel="noopener">
+          <img src="../../../assets/Images/corridors-selection.png" alt="A drag-box selection over central Mississippi highlighting 528 road sections in bright blue, with a Selected panel reporting 2,102 miles, 2,191,447 truck-miles, an average of 1,043 tractor-trailers per day, and 34 percent of length measured." loading="lazy" decoding="async">
+        </a>
+        <figcaption>
+          Drag-box selection with running totals: 528 sections, 2,102 miles,
+          2.19M truck-miles. A service area sized in one gesture. The measured
+          fraction sits right next to the total, so the number carries its own
+          caveat.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 03</span>
+      <span class="label">Honesty</span>
+    </div>
+    <div class="body-col">
+      <h2>Filling in the gaps</h2>
+      <p>
+        HPMS reports total traffic far more often than it reports vehicle
+        classification. About 45% of corridors have a solid vehicle count and no
+        idea how many of those vehicles were tractor-trailers. Delivering accurate
+        estimates that are honest about their source is vital. The final goal being a complete map
+        with minimal gaps that isn't misleading.
+      </p>
+      <p>
+        To fill missing gaps, previous years data was first used. Ranging back to 2018, a chronological
+        heirarchy of assigning values was used. For still un-measured segments, only those with measured
+        segments on both sides were interpolated. The rest were left blank, leaving extrapolation to the 
+        end user.
+      </p>
+      <p class="pull">
+        Missing data is a fact of life in any dataset. Safe, informed estimates are vital while drawing
+        a line on where the data is and where it isn't.
+      </p>
+
+      <h3>Historical data was designed to win, and lost</h3>
+      <p>
+        The estimator's donor chain rested on an assumption that sounds obvious.
+        A real historical count of a road should beat a model of that road, so
+        the 2018 National Network readings got priority.
+      </p>
+      <p>
+        Holdout testing disagreed: 19.8% error for the 2018 anchor against 6.8%
+        for a neighboring 2024 segment. Seven years of drift cost more than being
+        the same piece of road was worth. Demoting the anchor took overall error
+        from 18.0% to 4.9%, and R&sup2; from 0.833 to 0.989.
+      </p>
+
+      <h3>Zeros that weren't zeros</h3>
+      <p>
+        Forty-three segments reported exactly zero tractor-trailers. Take those
+        at face value and they're quiet roads. So I checked them against their
+        neighbors. One stretch reported 20,536 vehicles a day and 1,212 box
+        trucks, then zero tractor-trailers, with segments on both sides of it
+        reporting plenty. That's not a measurement of zero, it's a missing
+        measurement written down as zero. Believing it would have punched
+        artificial holes through real freight corridors.
+      </p>
+
+      <h3>Estimates never merge into measurements</h3>
+      <p>
+        Estimated values live in their own fields, separate from measured ones,
+        all the way through the pipeline and into the exported GeoJSON. The map
+        renders them in italics with an <em>est</em> tag. Every field has an info
+        button explaining where that number came from, and estimated fields look 
+        different than measured ones.
+      </p>
+
+      <figure class="shot">
+        <a href="../../../assets/Images/corridors-detail.png" target="_blank" rel="noopener">
+          <img src="../../../assets/Images/corridors-detail.png" alt="A detail panel for MS Highway 35 showing a 6.4 mile section. Tractor-trailers, single-unit, all trucks and truck-miles per day are in italics tagged est, while all vehicles per day reads 2,816 in plain type. Measured shows 0 percent of length, estimate basis reads nearest measured stretch of this road, and a note explains vehicle class was never sampled here." loading="lazy" decoding="async">
+        </a>
+        <figcaption>
+          MS&nbsp;35: total traffic is measured, vehicle class never was. The
+          panel says so in plain language instead of showing one confident
+          number.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 04</span>
+      <span class="label">Carriers</span>
+    </div>
+    <div class="body-col">
+      <h2>Who owns the trucks</h2>
+      <p>
+        Corridors answers volume and where the work is. But if blowout volume isn't enough,
+        how do we hit target profits? The answer is fleet accounts. Fleet accounts are the 
+        best work the business takes. They're repeat customers on payment terms that call 
+        with regular work. So the question is, how many fleets are near him, and how does he 
+        get in touch with them? Up to now, finding them had been word of mouth. 
+      </p>
+      <p>
+        The Carriers tab loads the FMCSA carrier census, filtered to a radius
+        around the business's home base: 17,105 registered carriers inside 75 miles. You can
+        narrow that by operating status (active registration with interstate-authority, active without,
+        revoked, inactive) and by fleet size. Fleet size is the one that matters
+        when you're hunting for somebody running fifty trucks instead of one.
+      </p>
+
+      <div class="shot-pair">
+        <figure class="shot shot-zoom">
+          <a href="../../../assets/Images/carriers-region.png" target="_blank" rel="noopener">
+            <img src="../../../assets/Images/carriers-region.png" alt="The Carriers tab zoomed out over the Southeast: purple and grey circles sized by carrier count cluster densely around central Mississippi, with a sidebar breaking 17,105 carriers into status groups and fleet-size filters." loading="lazy" decoding="async">
+          </a>
+          <figcaption>
+            17,105 carriers within 75 miles, circles sized by count per ZIP and
+            colored by operating status.
+          </figcaption>
+        </figure>
+        <figure class="shot shot-zoom">
+          <a href="../../../assets/Images/carriers-zip.png" target="_blank" rel="noopener">
+            <img src="../../../assets/Images/carriers-zip.png" alt="A selected ZIP panel for Brandon 39042 reporting 399 carriers 26 miles from Raleigh, broken into status groups, above a filterable list of carrier names each with a power-unit count: Rankin County School District 349, Brown Bottling Group 82, Killen Contractors 47." loading="lazy" decoding="async">
+          </a>
+          <figcaption>
+            Drilling into one ZIP: 399 carriers, sorted by power units. A
+            prospect list, in the order worth calling.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 05</span>
+      <span class="label">Architecture</span>
+    </div>
+    <div class="body-col">
+      <h2>Three pieces that never talk at runtime</h2>
+      <p>
+        Python writes GeoJSON into a folder. Wrangler ships that folder to
+        Cloudflare's edge. The browser fetches the files straight off it. There
+        is no API layer anywhere in the project, and the only server-side code is
+        a 156-line auth check borrowed off the business's tires app.
+      </p>
+      <ul class="plain">
+        <li><strong>Pipeline.</strong> Python, GeoPandas and pyogrio for geospatial I/O, pandas, YAML config. Pure batch: static files in, static files out, no database and no server. Tested with pytest.</li>
+        <li><strong>Edge.</strong> Cloudflare Workers via Wrangler 4, with static assets bound and <code>run_worker_first</code> so the worker sees every request before the asset server answers.</li>
+        <li><strong>Frontend.</strong> One 1,368-line HTML file. No framework, no bundler, no npm dependency, no build step. Plain ES modules with MapLibre GL. Filtering, the color ramps, drag-box select, and per-ZIP aggregation all run in the browser as MapLibre style expressions over the GeoJSON.</li>
+      </ul>
+      <p>
+        All the analysis happens offline, so nothing needs computing when a
+        request comes in.
+      </p>
+
+      <h3>The gate protects one path</h3>
+      <p>
+        The two tabs need different protection, so they get different
+        protection. Corridor data is public federal highway information
+        without any personal or business information and stays
+        open to anyone. The carrier file holds FMCSA personal data: names,
+        phones, and emails for roughly 17,000 businesses. Though they were
+        gathered from public sources, no consent was obtained from the carriers
+        so the safe move is to keep it private. So the worker guards
+        exactly one path, <code>/carriers.geojson</code>, with borrowed auth
+        from the tires app.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 07</span>
+      <span class="label">Limits</span>
+    </div>
+    <div class="body-col">
+      <h2>What this doesn't tell you</h2>
+      <ul class="plain">
+        <li><strong>Local roads.</strong> County roads and unnumbered local roads aren't in HPMS and aren't on the map.</li>
+        <li><strong>Truck-miles stand in for rolling exposure, not blowouts.</strong> Roughness, rutting, speed limit, and urban fraction ride through to the output unmodeled, waiting for a reason to think they'd sharpen the proxy.</li>
+        <li><strong>Call history can't settle it.</strong> That history is shaped by current ad coverage, so agreeing with it wouldn't prove anything. That's why it stayed out of scope.</li>
+      </ul>
+      <p>
+        None of this stops the tool from doing its job. Reporting truck-miles
+        and listing nearby fleets by size both survive every limitation on the
+        list. That's why the scope stops where it does.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="byline">
+      <span class="label">Gavin Breaux</span>
+      <span class="label"><a href="mailto:gavinbreaux777@yahoo.com">gavinbreaux777@yahoo.com</a></span>
+    </div>
+    <p class="footer-note">
+      <a href="../">&larr; Breaux's Roadside &amp; Tire overview</a>
+      &nbsp;&middot;&nbsp;
+      <a href="../tooling/">&larr; The app the business runs on</a>
+      &nbsp;&middot;&nbsp;
+      <a href="https://traffic.breauxs-roadside.com" target="_blank" rel="noopener">See the live map &rarr;</a>
+    </p>
+  </footer>
+
+</div>
+</body>
+</html>
