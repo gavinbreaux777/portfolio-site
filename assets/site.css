@@ -370,12 +370,39 @@ pre code { background: none; border: none; padding: 0; font-size: inherit; word-
   object-fit: contain; background: #FFFFFF; padding: 0.4rem;
 }
 
+/* CAD renders are near-square and have their own flat grey ground. A cover
+   crop would cut the assembly, so they letterbox like .shot-tall but keep
+   the render's own background instead of forcing white behind it. */
+.shot-row .shot-render img {
+  object-fit: contain; background: #C3C9D2; padding: 0.4rem;
+}
+
+/* Portrait photographs in a .shot-row cell. Like .shot-tall they letterbox
+   rather than crop, but they carry no white page of their own, so the bars
+   use the theme's sunk ground and stay correct in dark mode. */
+.shot-row .shot-photo img {
+  object-fit: contain; background: var(--ground-sunk); padding: 0.4rem;
+}
+
 /* Supporting shot: the customer-facing site is a step on the way to the
    app, not the point, so it's held to a fraction of the app shots' width.
    Centered under them, it reads as a footnote rather than a third column. */
 .shot-minor {
   max-width: 22rem; margin: 0 auto var(--gap);
   align-items: center; text-align: center;
+}
+
+/* Small in-column figure: a supporting photo that shouldn't outweigh the
+   prose beside it. Portrait sources would otherwise run the full column
+   width and dominate the section. Left-aligned to the text rather than
+   centered, so it stays flush with the paragraphs above it, and it sets no
+   align-items so the image still fills the capped frame. */
+.shot-inset { max-width: 17rem; }
+/* Capped by height, not width: the source is portrait, so a width cap alone
+   still leaves it the tallest thing on the page. contain (not cover) keeps
+   the whole machine visible, since the point of the shot is the build. */
+.shot-inset img {
+  height: 11rem; width: 100%; object-fit: contain; object-position: left center;
 }
 
 /* Lead figure: sits between the masthead and the spec strip, so it takes
