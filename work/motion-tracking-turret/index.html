@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motion Tracking Turret &mdash; Gavin Breaux</title>
+<meta name="description" content="A Raspberry Pi motion-tracking turret built end to end: OpenCV detection, stepper aiming, a custom three-rail PCB, and four CAD revisions of the mechanism.">
+<link rel="stylesheet" href="../../assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="sitenav">
+    <a href="../../">Home</a>
+    <a href="../../resume/">Resume</a>
+    <a href="../" aria-current="page">Side Projects</a>
+  </nav>
+
+  <header class="masthead">
+    <div class="stamp">
+      <span class="label">Side project</span>
+      <span class="label">Hardware &amp; software</span>
+      <span class="label">Ongoing</span>
+    </div>
+
+    <h1>Motion tracking turret</h1>
+    <p class="label">Camera to contour to stepper angle to trigger</p>
+
+    <p class="deck">
+      A pan/tilt turret that watches a room, finds whatever moved, aims at it,
+      and fires a foam ball. The target is an entitled, panther-looking black
+      cat named Mitski. The actual problem is getting from pixels to motor
+      angles quickly enough to hit a moving cat, and reliably enough that the
+      thing doesn't fire at shadows. I started it in 2023 on an ESP32, hit the
+      limits of what that chip could do, and shelved it. I picked it back up in
+      2025 on a Raspberry Pi with an architecture that could actually hold the
+      whole feature set. The current version covers image processing, motion
+      control, a Flask control server, four CAD revisions of the mechanism, and
+      a custom PCB. I wrote all of it myself, with no AI-generated code.
+    </p>
+
+    <div class="byline">
+      <span class="label"><a href="https://github.com/gavinbreaux777/Cam_Tracking_Pi" target="_blank" rel="noopener">github.com/gavinbreaux777/Cam_Tracking_Pi</a></span>
+      <span class="label">Python &middot; OpenCV &middot; Flask &middot; KiCad &middot; SolidWorks</span>
+    </div>
+  </header>
+
+  <div class="shot-row">
+    <figure class="shot shot-zoom shot-render">
+      <a href="../../assets/Images/turret-cad-v4.webp" target="_blank" rel="noopener">
+        <img src="../../assets/Images/turret-cad-v4.webp" alt="A SolidWorks assembly render of the current fourth revision, showing the barrel and hopper on the tilt axis, the gear train and stepper motors inside the frame, and the pan stage enclosed in the base." loading="lazy" decoding="async">
+      </a>
+      <figcaption>
+        The current design, V4 in SolidWorks. Direct drive, with the pan stage
+        moved down into the base.
+      </figcaption>
+    </figure>
+    <figure class="shot shot-zoom shot-photo">
+      <a href="../../assets/Images/turret-pcb-revs.webp" target="_blank" rel="noopener">
+        <img src="../../assets/Images/turret-pcb-revs.webp" alt="Four bare PCB revisions fanned out on a desk, a green V1 board behind three white boards labelled Mitski Killer V1.2A, V1.2B, and V1.2C, each with stepper driver footprints, screw terminals, and regulator sections silkscreened." loading="lazy" decoding="async">
+      </a>
+      <figcaption>
+        Board revisions, V1 through V1.2C. Each one a fabrication round to fix
+        what the last one got wrong.
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="spec-strip">
+    <div class="spec">
+      <span class="spec-val">4</span>
+      <span class="label">Mechanical revisions</span>
+      <span class="spec-note">Belt-driven pan table through to direct drive, each one a rebuild rather than a tweak</span>
+    </div>
+    <div class="spec">
+      <span class="spec-val">3</span>
+      <span class="label">Voltage rails on a custom PCB</span>
+      <span class="spec-note">Designed in KiCad and iterated across four fabricated revisions to keep logic and motor power separate</span>
+    </div>
+    <div class="spec">
+      <span class="spec-val">0</span>
+      <span class="label">Lines of AI-generated code</span>
+      <span class="spec-note">Written by hand, unlike the Roadside work. Late on I asked ChatGPT the occasional question, but nothing here was generated</span>
+    </div>
+  </div>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 01</span>
+      <span class="label">The Problem</span>
+    </div>
+    <div class="body-col">
+      <h2>Two attempts, and why the first one stopped</h2>
+      <p>
+        The first build, in 2023, was an ESP32 system
+        (<a href="https://github.com/gavinbreaux777/Cam_Tracking_ESP" target="_blank" rel="noopener">Cam_Tracking_ESP</a>)
+        that I deliberately kept cheap, with as few external libraries as I
+        could manage. That was the whole point at the time. I wanted to
+        understand each layer instead of importing it. What stopped it was
+        capability rather than effort. The ESP32 couldn't drive the kind of
+        control interface I wanted, and it couldn't hold the control loop speeds
+        that aiming and firing needed while processing frames at the same
+        time.
+      </p>
+      <p>
+        Coming back to it in 2025 on a Raspberry Pi 4B meant giving up some of
+        that and accepting prebuilt architecture, but it bought enough headroom
+        for everything that followed. The Pi hosts the control GUI, runs the
+        camera, processes frames, and drives the motors in one process.
+      </p>
+
+      <div class="arc">
+        <div class="arc-step">
+          <span class="arc-n">01</span>
+          <span class="arc-text">
+            <strong>Detect</strong>
+            <span>Frames get grayscaled and differenced against a stored base frame, then thresholded down to a binary mask.</span>
+          </span>
+        </div>
+        <div class="arc-step">
+          <span class="arc-n">02</span>
+          <span class="arc-text">
+            <strong>Filter</strong>
+            <span>Contours under a configured area get thrown out. Whatever survives is merged into a single bounding box, and its center becomes the target.</span>
+          </span>
+        </div>
+        <div class="arc-step">
+          <span class="arc-n">03</span>
+          <span class="arc-text">
+            <strong>Confirm</strong>
+            <span>A target only counts once it has been seen in ten frames in a row, and only if it isn't near the frame edge. Those two rules are what stopped it firing at noise and at things halfway out of view.</span>
+          </span>
+        </div>
+        <div class="arc-step">
+          <span class="arc-n">04</span>
+          <span class="arc-text">
+            <strong>Convert</strong>
+            <span>Pixel offset becomes percentage-from-center, then motor degrees through a per-axis calibration constant. Both constants are configurable and get set from the calibration tab rather than hardcoded.</span>
+          </span>
+        </div>
+        <div class="arc-step">
+          <span class="arc-n">05</span>
+          <span class="arc-text">
+            <strong>Aim and fire</strong>
+            <span>Pan and tilt steppers move to the angle, the spool motors come up to speed, and a servo drops a ball into them.</span>
+          </span>
+        </div>
+        <div class="arc-step">
+          <span class="arc-n">06</span>
+          <span class="arc-text">
+            <strong>Re-baseline</strong>
+            <span>The base frame is cleared after every shot, since the turret has just moved and everything it can see has changed.</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 02</span>
+      <span class="label">Software</span>
+    </div>
+    <div class="body-col">
+      <h2>Mockable, so it can be tested without the hardware</h2>
+      <p>
+        Every hardware dependency sits behind an interface, picked at startup by
+        a factory that reads config. Set <code>mock</code> on the camera or the
+        GPIO layer and the system swaps in a stand-in that returns synthetic
+        frames and swallows pin writes.
+      </p>
+      <ul class="plain">
+        <li>
+          <strong>Why that matters.</strong> The whole application runs on a
+          laptop with nothing plugged into it. That's also what lets CI work on
+          a hardware project: GitHub Actions lints and runs the test suite on
+          every push and pull request, on a runner that has no Pi attached.
+        </li>
+        <li>
+          <strong>Detection and motion are decoupled.</strong> An
+          observer/event layer carries detections from the camera side over to
+          the motor side, so image processing knows nothing about what acts on
+          its output.
+        </li>
+        <li>
+          <strong>Motor control is layered.</strong> Raw stepper and servo
+          drivers sit under an aiming controller and a firing controller, which
+          both sit under a single motor-control facade. Pin-level detail stays
+          at the bottom.
+        </li>
+        <li>
+          <strong>Anything tunable lives in JSON.</strong> Pin assignments, step
+          mode, speeds, servo open and closed angles, minimum object size, spool
+          time, and the degrees-per-percent aiming constants are all config,
+          parsed into typed config classes at load.
+        </li>
+        <li>
+          <strong>Flask control server.</strong> A browser GUI streams the
+          processed camera feed with its detection overlays, and handles
+          settings and manual motor control. It can also show the raw difference
+          mask or the drawn contours, which is what makes it possible to tune
+          detection by eye.
+        </li>
+        <li>
+          <strong>Calibration tab.</strong> Aiming depends on how many motor
+          degrees match one percent of frame offset, and that changes with lens,
+          mounting, and gearing, so it can't be a constant in the source. The
+          GUI walks the procedure instead. Click a point on the live frame and
+          it stores that click as a ratio from center, along with the current
+          stepper positions. Jog the turret until it is actually pointing at
+          what you clicked, then save. It takes the motor deltas, divides by the
+          click ratios, and pushes the resulting degrees-per-percent factors to
+          the server for both axes.
+        </li>
+      </ul>
+
+      <div class="shot-pair">
+        <figure class="shot shot-zoom">
+          <a href="../../assets/Images/turret-gui.webp" target="_blank" rel="noopener">
+            <img src="../../assets/Images/turret-gui.webp" alt="The Mitski Killer web GUI on the Motor Control tab. A small processed grayscale frame at top left shows a detected bounding box drawn around the cat, the live color stream sits center, and DC motor, stepper, and servo control panels run along the bottom." loading="lazy" decoding="async">
+          </a>
+          <figcaption>
+            The control GUI mid-detection, with the bounding box drawn around
+            Mitski in the processed frame at top left.
+          </figcaption>
+        </figure>
+        <figure class="shot shot-zoom">
+          <a href="../../assets/Images/turret-calibration.webp" target="_blank" rel="noopener">
+            <img src="../../assets/Images/turret-calibration.webp" alt="The Calibration tab, showing the clicked frame beside the live frame with a red crosshair marking the clicked point, a Save Calibration button, and readouts for X and Y click ratios, motor start positions, and degrees per percent move." loading="lazy" decoding="async">
+          </a>
+          <figcaption>
+            The calibration tab: click ratio and motor start position on the
+            left, degrees-per-percent computed on save.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 03</span>
+      <span class="label">Hardware</span>
+    </div>
+    <div class="body-col">
+      <h2>Mechanical and electrical, iterated the same way</h2>
+      <p>
+        None of the software matters if the thing underneath it can't hold an
+        angle, which is where most of the revisions came from.
+      </p>
+      <ul class="plain">
+        <li>
+          <strong>Mechanism.</strong> A pan/tilt table carrying a
+          spinning-barrel launcher. Two hobby DC motors spool up a pair of
+          wheels, and a servo chambers a 3/4-inch foam ball into them.
+        </li>
+        <li>
+          <strong>Four CAD revisions.</strong> The pan axis started belt-driven
+          and ended up direct drive. The belt stage needed room for the motor,
+          the pulleys, and the belt run itself, and that geometry didn't fit the
+          package I was working within. SolidWorks part and assembly files are
+          versioned in the repo through Git LFS.
+        </li>
+        <li>
+          <strong>Custom PCB.</strong> Designed and iterated in KiCad, from a
+          green V1 through three more revisions, carrying three supply levels so
+          logic and motor voltage stay separated on one board instead of a
+          breadboard full of modules.
+        </li>
+        <li>
+          <strong>Aiming hardware.</strong> Two NEMA 17 steppers at 1/16
+          microstepping on both axes, driven through pigpio with software travel
+          limits.
+        </li>
+      </ul>
+
+      <figure class="shot shot-zoom shot-inset">
+        <a href="../../assets/Images/turret-system.webp" target="_blank" rel="noopener">
+          <img src="../../assets/Images/turret-system.webp" alt="An early physical build of the turret: a red 3D-printed open frame holding a three-barrel hopper above a pair of spinning launch wheels, with the Raspberry Pi mounted inside the frame and the custom PCB and stepper drivers wired up on the desk in front of it." loading="lazy" decoding="async">
+        </a>
+        <figcaption>
+          An <strong>early revision</strong> built in red, kept here because it
+          shows the wiring and the board in use. The open frame and exposed pan
+          motor below it are what later revisions replaced.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 04</span>
+      <span class="label">Status</span>
+    </div>
+    <div class="body-col">
+      <h2>Where it stands</h2>
+      <p>
+        It detects, aims, and fires. What I'm still working on is accuracy,
+        hitting targets while they're moving, tidying up the wiring, improving
+        the mechanical drive, and the finishing touches that take it from a
+        working system to a finished one. Documentation is uneven in places,
+        since this started as something I was building for myself rather than
+        for anyone else to read.
+      </p>
+      <p>
+        <a class="card-cta cta-standalone" href="https://github.com/gavinbreaux777/Cam_Tracking_Pi" target="_blank" rel="noopener">View the repository on GitHub</a>
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="byline">
+      <span class="label">Gavin Breaux</span>
+      <span class="label"><a href="mailto:gavinbreaux777@yahoo.com">gavinbreaux777@yahoo.com</a></span>
+    </div>
+    <p class="footer-note">
+      <a href="../">&larr; Back to side projects</a>
+    </p>
+  </footer>
+
+</div>
+</body>
+</html>
