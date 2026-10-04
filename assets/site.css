@@ -384,6 +384,15 @@ pre code { background: none; border: none; padding: 0; font-size: inherit; word-
   object-fit: contain; background: var(--ground-sunk); padding: 0.4rem;
 }
 
+/* Wide app screenshots (about 2:1) in a .shot-row cell. The shared 17rem
+   frame is taller than they are, so a letterbox leaves bars above and
+   below. A 2:1 frame fits them and keeps the cells even; contain keeps the
+   whole screen visible, with the theme's sunk ground behind any slack. */
+.shot-row .shot-wide img {
+  height: auto; aspect-ratio: 2 / 1;
+  object-fit: contain; background: var(--ground-sunk);
+}
+
 /* Supporting shot: the customer-facing site is a step on the way to the
    app, not the point, so it's held to a fraction of the app shots' width.
    Centered under them, it reads as a footnote rather than a third column. */
@@ -404,6 +413,18 @@ pre code { background: none; border: none; padding: 0; font-size: inherit; word-
 .shot-inset img {
   height: 11rem; width: 100%; object-fit: contain; object-position: left center;
 }
+
+/* Reserved frame for a screenshot that hasn't been captured yet. Dashed
+   amber matches .ph, so a grep for class="ph" or shot-todo finds every
+   gap before publishing. Swap the div for an <a><img></a> when it lands. */
+.shot-todo {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 15rem; padding: 1rem; text-align: center;
+  border: 1px dashed var(--amber); border-radius: 3px;
+  background: var(--ground-sunk); color: var(--amber);
+  font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.04em;
+}
+.shot-inset .shot-todo { min-height: 11rem; }
 
 /* Lead figure: sits between the masthead and the spec strip, so it takes
    the wrapper's full width rather than a text measure. */

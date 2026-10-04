@@ -11,6 +11,8 @@ work/breauxs-roadside/         Roadside overview + its two case studies
   index.html                   Engagement overview
   attribution/index.html       Call attribution case study (flagship)
   tooling/index.html           Internal tooling case study
+work/motion-tracking-turret/    Turret case study
+work/budget/                   Budget app case study
 assets/site.css                Shared design system
 assets/gavin-breaux-resume.pdf Downloadable resume
 ```
@@ -29,8 +31,9 @@ at a single project.
 ## Placeholders
 
 `.ph` renders text as amber with a dashed underline, for content that still
-needs writing. There are none in the site right now -- `grep -r 'class="ph"'`
-should stay empty before publishing.
+needs writing, and `.shot-todo` is a dashed frame that reserves space for a
+screenshot not yet captured. There are none in the site right now --
+`grep -rE 'class="ph"|shot-todo' work` should stay empty before publishing.
 
 ## Keeping the resume in sync
 
@@ -49,5 +52,5 @@ The projects these case studies describe live in their own repos:
 
 - `Breauxs-Roadside/breauxs-roadside-assistance-website` -- customer-facing site
 - `Breauxs-Roadside/tire-inventory` -- the internal web app
-- `gavinbreaux777/Terrible-Traffic`, `gavinbreaux777/Cam_Tracking_Pi` -- side
-  projects, listed on the resume
+- `gavinbreaux777/Terrible-Traffic`, `gavinbreaux777/Cam_Tracking_Pi`,
+  `gavinbreaux777/Budget` -- side projects, listed on the resume
