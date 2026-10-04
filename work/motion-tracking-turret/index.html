@@ -27,16 +27,15 @@
     <p class="label">Camera to contour to stepper angle to trigger</p>
 
     <p class="deck">
-      A pan/tilt turret that watches a room, finds whatever moved, aims at it,
-      and fires a foam ball. The target is an entitled, panther-looking black
-      cat named Mitski. The actual problem is getting from pixels to motor
-      angles quickly enough to hit a moving cat, and reliably enough that the
-      thing doesn't fire at shadows. I started it in 2023 on an ESP32, hit the
-      limits of what that chip could do, and shelved it. I picked it back up in
-      2025 on a Raspberry Pi with an architecture that could actually hold the
-      whole feature set. The current version covers image processing, motion
-      control, a Flask control server, four CAD revisions of the mechanism, and
-      a custom PCB. I wrote all of it myself, with no AI-generated code.
+      A pan/tilt turret that watches a room, finds whatever moved, aims at it, and
+      fires a foam ball. The target is an entitled, panther-looking black cat
+      named Mitski. The hard part is getting from pixels to motor angles fast
+      enough to hit a moving cat, and reliably enough that it doesn't fire at
+      shadows. I started it in 2023 on an ESP32, ran into what that chip could do,
+      and shelved it. In 2025 I picked it back up on a Raspberry Pi, which could
+      hold the whole feature set. It now has image processing, motion control, a
+      Flask control server, four CAD revisions of the mechanism, and a custom PCB.
+      I wrote all of it myself, with no AI-generated code.
     </p>
 
     <div class="byline">
@@ -96,11 +95,10 @@
         (<a href="https://github.com/gavinbreaux777/Cam_Tracking_ESP" target="_blank" rel="noopener">Cam_Tracking_ESP</a>)
         that I deliberately kept cheap, with as few external libraries as I
         could manage. That was the whole point at the time. I wanted to
-        understand each layer instead of importing it. What stopped it was
-        capability rather than effort. The ESP32 couldn't drive the kind of
-        control interface I wanted, and it couldn't hold the control loop speeds
-        that aiming and firing needed while processing frames at the same
-        time.
+        understand each layer instead of importing it. What stopped it was the
+        hardware, not effort. The ESP32 couldn't run the kind of control interface
+        I wanted, and it couldn't keep up the control loop speeds that aiming and
+        firing needed while also processing frames.
       </p>
       <p>
         Coming back to it in 2025 on a Raspberry Pi 4B meant giving up some of

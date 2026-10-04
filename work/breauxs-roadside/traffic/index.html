@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Market sizing — case study — Gavin Breaux</title>
-<meta name="description" content="How much roadside work exists, and how many fleets are nearby — a Python pipeline over federal HPMS and FMCSA data, rendered as a static map with no API layer.">
+<meta name="description" content="How much roadside work exists, and how many fleets are nearby. A Python pipeline over federal HPMS and FMCSA data, rendered as a static map with no API layer.">
 <link rel="stylesheet" href="../../../assets/site.css">
 </head>
 <body>
@@ -26,11 +26,11 @@
     <h1>How much work is out there?</h1>
 
     <p class="deck">
-      The attribution work told the owner where his calls came from. The app
-      told him what happened to them. Then he asked something neither could
-      answer: how much roadside work is out there at all, and how much of it does
-      he need to win for the numbers to work? Nobody publishes that. So I
-      estimated it, and built a second tool to find the fleets behind it.
+      The attribution work showed the owner where his calls came from, and the app
+      showed him what happened to them. Then he asked something neither could
+      answer: how much roadside work is out there, and how much of it does he need
+      to win to make the numbers work? Nobody publishes that, so I estimated it
+      and built a second tool to find the fleets behind it.
     </p>
 
     <div class="byline">
@@ -82,8 +82,8 @@
         different plans.
       </p>
       <p class="pull">
-        No dataset counts tire blowouts. There is no authority to look it up
-        from, no trade association publishing it, no way to buy it.
+        No dataset counts tire blowouts. No agency or trade group publishes it,
+        and you can't buy it.
       </p>
       <p>
         So the tool doesn't try to count them. It models exposure instead:
@@ -116,12 +116,12 @@
         double inventory, data integrity maintained.
       </p>
       <ul class="plain">
-        <li><strong>Extract</strong> &mdash; keep the mainline highways and drop everything else. HPMS says what each road <em>is</em> (mainline, ramp, frontage) and how it's signed (Interstate, US, state route).</li>
-        <li><strong>Metrics</strong> &mdash; truck-miles per segment. Nulls treated as missing data, false zeros located.</li>
-        <li><strong>Corridors</strong> &mdash; put each road back together in order. I&#8209;20 arrives as 1,822 separate rows, cut at arbitrary measurement points. Sorting by mileposts or counties failed on inconsistencies. What works is the shape itself: match the end coordinate of one piece to the start coordinate of the next and chain them. Once chained, I&#8209;20's mileposts run strictly west to east, which is how I know it worked.</li>
-        <li><strong>Interpolate and estimate</strong> &mdash; fill short interior gaps, then estimate the rest through a donor chain of past data.</li>
-        <li><strong>Aggregate</strong> &mdash; cut the chained corridors into sections wherever reported traffic changes by more than the configured tolerance.</li>
-        <li><strong>Export</strong> &mdash; write the map out four times, once per section size, as four GeoJSON files. Pre-cutting them here means the dropdown just swaps files and the browser never has to re-cut anything.</li>
+        <li><strong>Extract.</strong> Keep the mainline highways and drop everything else. HPMS says what each road <em>is</em> (mainline, ramp, frontage) and how it's signed (Interstate, US, state route).</li>
+        <li><strong>Metrics.</strong> Truck-miles per segment. Nulls treated as missing data, false zeros located.</li>
+        <li><strong>Corridors.</strong> Put each road back together in order. I&#8209;20 arrives as 1,822 separate rows, cut at arbitrary measurement points. Sorting by mileposts or counties failed on inconsistencies. What works is the shape itself: match the end coordinate of one piece to the start coordinate of the next and chain them. Once chained, I&#8209;20's mileposts run strictly west to east, which is how I know it worked.</li>
+        <li><strong>Interpolate and estimate.</strong> Fill short interior gaps, then estimate the rest through a donor chain of past data.</li>
+        <li><strong>Aggregate.</strong> Cut the chained corridors into sections wherever reported traffic changes by more than the configured tolerance.</li>
+        <li><strong>Export.</strong> Write the map out four times, once per section size, as four GeoJSON files. Pre-cutting them here means the dropdown just swaps files and the browser never has to re-cut anything.</li>
       </ul>
 
       <h3>Granularity that follows the data</h3>
@@ -138,10 +138,9 @@
         So it splits on traffic instead of length. Wherever volume changes by
         more than the percentage you pick, the road gets cut there. That 3-mile
         stretch stays its own section because it differs from its neighbor by far
-        more than 15%. Length stops being a goal and becomes a result: busy areas
-        break into many short sections, uniform rural highway stays in long ones.
-        Moving the slider makes the map coarser or finer without ever averaging
-        away a difference that matters.
+        more than 15%. Busy areas break into many short sections, and uniform
+        rural highway stays in long ones. Moving the slider makes the map coarser
+        or finer without averaging away a difference that matters.
       </p>
 
       <figure class="shot">
@@ -149,10 +148,10 @@
           <img src="../../../assets/Images/corridors-selection.webp" alt="A drag-box selection over central Mississippi highlighting 528 road sections in bright blue, with a Selected panel reporting 2,102 miles, 2,191,447 truck-miles, an average of 1,043 tractor-trailers per day, and 34 percent of length measured." loading="lazy" decoding="async">
         </a>
         <figcaption>
-          Drag-box selection with running totals: 528 sections, 2,102 miles,
-          2.19M truck-miles. A service area sized in one gesture. The measured
-          fraction sits right next to the total, so the number carries its own
-          caveat.
+          Drag-box selection with running totals: 528 sections, 2,102 miles, 2.19M
+          truck-miles. Sizing a service area takes one drag. The measured fraction
+          sits next to the total, so you can see how much of the number is
+          estimated.
         </figcaption>
       </figure>
     </div>
@@ -161,7 +160,7 @@
   <section>
     <div class="rail">
       <span class="rail-num">&sect; 03</span>
-      <span class="label">Honesty</span>
+      <span class="label">Gaps</span>
     </div>
     <div class="body-col">
       <h2>Filling in the gaps</h2>
@@ -202,9 +201,9 @@
         at face value and they're quiet roads. So I checked them against their
         neighbors. One stretch reported 20,536 vehicles a day and 1,212 box
         trucks, then zero tractor-trailers, with segments on both sides of it
-        reporting plenty. That's not a measurement of zero, it's a missing
-        measurement written down as zero. Believing it would have punched
-        artificial holes through real freight corridors.
+        reporting plenty. That's not a real zero, it's a missing measurement that
+        got recorded as zero. If I'd believed it, the map would have had fake gaps
+        in real freight corridors.
       </p>
 
       <h3>Estimates never merge into measurements</h3>
@@ -266,8 +265,8 @@
             <img src="../../../assets/Images/carriers-zip.webp" alt="A selected ZIP panel for Brandon 39042 reporting 399 carriers 26 miles from Raleigh, broken into status groups, above a filterable list of carrier names each with a power-unit count: Rankin County School District 349, Brown Bottling Group 82, Killen Contractors 47." loading="lazy" decoding="async">
           </a>
           <figcaption>
-            Drilling into one ZIP: 399 carriers, sorted by power units. A
-            prospect list, in the order worth calling.
+            One ZIP drilled into: 399 carriers sorted by power units, which works
+            as a prospect list in the order worth calling.
           </figcaption>
         </figure>
       </div>
