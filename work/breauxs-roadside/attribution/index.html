@@ -44,8 +44,8 @@
         <img src="../../../assets/Images/GA4.png" alt="A Google Analytics 4 reporting view: a channel-group traffic chart above a table of users and sessions by channel." loading="lazy" decoding="async">
         <span class="platform-cap">
           <strong>GA4</strong>
-          Sessions and call-button taps on the site &mdash; but a tap it
-          often couldn't trace back to a source.
+          Sessions and call-button taps on the site, but it often couldn't trace a
+          tap back to a source.
         </span>
       </div>
       <div class="platform">
@@ -96,9 +96,9 @@
     <div class="body-col">
       <h2>Almost no calls, in the season that should have been busiest</h2>
       <p>
-        Mobile commercial tire service &mdash; where a stranded driver searches 
-        once and calls whoever answers. Demand isn't the constraint. Being findable
-        at the moment of the search is.
+        Mobile commercial tire service is a business where a stranded driver
+        searches once and calls whoever answers. Demand isn't the problem. Being
+        easy to find at that moment is.
       </p>
       <p>
         The owner rarely did more than a job a week. It should have been the busy season.
@@ -123,10 +123,9 @@
         <div class="split-prose">
           <p>
             The site exists to do one thing: turn a search into a phone call.
-            Everything on it is arranged around a single action &mdash; tap 
-            to call the owner via a <code>tel:</code> link in the 
-            header, again as the primary button, and again at the end of every 
-            section.
+            Everything on it points at one action: tapping to call the owner,
+            through a <code>tel:</code> link in the header, again as the main
+            button, and again at the end of every section.
           </p>
           <p>
             The site was built with SEO and advertising in mind, structuring 
@@ -212,7 +211,7 @@
       <div class="sources">
         <div class="source">
           <span class="source-name">GA4</span>
-          <span class="source-sees">Site sessions and <code>tel:</code> click events &mdash; a real conversion on a business that runs on calls.</span>
+          <span class="source-sees">Site sessions and <code>tel:</code> click events, which count as real conversions for a business that runs on calls.</span>
           <span class="source-blind">Tracing a tap back to its source was difficult and often impossible.</span>
         </div>
         <div class="source">
@@ -228,15 +227,16 @@
       </div>
 
       <p>
-        Left alone this produces two failures: the same call counted twice by two
-        systems that each claim it, and a call counted by none of them &mdash;
-        credited to no source at all. Both distort the only number that decides
-        budget: what a source actually returns.
+        Left alone, that causes two problems: the same call counted twice by two
+        systems that each claim it, and a call counted by none of them, so it gets
+        credited to no source. Both throw off the one number that decides budget:
+        what a source actually returns.
       </p>
       <p>
-        The deeper gap: all three measure <strong>calls</strong>. The
-        business makes money on <strong>jobs</strong>. A cost-conscious owner
-        asked to spend more isn't asking how many phones rang.
+        The bigger gap is that all three measure <strong>calls</strong>, but the
+        business makes money on <strong>jobs</strong>. An owner who's being asked
+        to spend more doesn't care how many phones rang. He wants to know how much
+        work came out of it.
       </p>
     </div>
   </section>
@@ -251,11 +251,10 @@
 
       <div class="split">
         <p>
-          Began in Google Sheets, fed by a simple Google Form &mdash; a deliberate
-          choice over anything more sophisticated. The outcome data could only come
-          from the person answering the phone, so adoption was the binding
-          constraint. A tool the owner fills in between jobs beats a better one he
-          abandons.
+          I started in Google Sheets, fed by a simple Google Form, on purpose. The
+          outcome data could only come from the person answering the phone, so the
+          real risk was whether he'd keep filling it in. A simple tool he uses
+          between jobs beats a better one he gives up on.
         </p>
         <figure class="shot shot-zoom">
           <a href="../../../assets/Images/Call Forms.webp" target="_blank" rel="noopener">
@@ -298,9 +297,9 @@
           <div class="beat">
             <span class="label">Outcome</span>
             <p>
-              The owner records what the call was and whether it became work
-              &mdash; the same details he still records on job forms today. That
-              column is the one thing no platform could supply.
+              The owner records what the call was and whether it became work, the
+              same details he still records on job forms today. No platform could
+              supply that column.
             </p>
           </div>
         </div>
@@ -309,10 +308,10 @@
       <div class="note">
         <span class="label">Known limitation</span>
         <p>
-          Call data is self-reported and hand-entered, so it carries the usual
-          risks. It was reconciled against platform call counts to catch gaps,
-          but it isn't instrumented ground truth. It was accurate enough to make
-          budget decisions with, which was the bar it needed to clear.
+          Call data is self-reported and entered by hand, so it can be wrong. I
+          checked it against platform call counts to catch gaps, but it isn't
+          exact. It was accurate enough to make budget decisions with, and that
+          was all it needed to be.
         </p>
       </div>
     </div>
@@ -326,19 +325,18 @@
     <div class="body-col">
       <h2>Measurement unlocked the spend</h2>
       <p>
-        The owner was reluctant to double his ad spend. Within one to two months
-        &mdash; call volume visibly climbing, each call traceable to a source and
-        an outcome &mdash; he was spending more than ten times the original
-        budget across channels, confidently.
+        The owner didn't want to double his ad spend. Within one to two months,
+        with calls visibly climbing and each one traceable to a source and an
+        outcome, he was spending more than ten times the original budget across
+        channels, and was comfortable doing it.
       </p>
       <p class="pull">
-        An owner who won't increase ad spend because he can't see what it returns isn't
-        being stubborn. He's responding correctly to missing information.
+        An owner who won't raise ad spend when he can't see what it returns is
+        making a reasonable call with the information he has.
       </p>
       <p>
-        That decision is the strongest evidence the system worked, and better
-        evidence than a figure would be. Nobody multiplies their ad spend tenfold
-        on a channel they can't see returning.
+        That decision is the best proof the system worked. Nobody multiplies their
+        ad spend tenfold on a channel they can't see returning.
       </p>
     </div>
   </section>
@@ -351,15 +349,14 @@
     <div class="body-col">
       <h2>The problem it surfaced next</h2>
       <p>
-        Better measurement produces better problems. With calls classified by
-        outcome, leaks became visible: some calls measured as "conversions" by Google Ads 
-        weren't converting to jobs, and searchers who landed on the
-        page and left because it didn't show what they were looking for.
+        Better measurement turned up new problems. With calls sorted by outcome, I
+        could see the leaks: some calls Google Ads counted as "conversions"
+        weren't turning into jobs, and some searchers landed on the page and left
+        because it didn't show what they were looking for.
       </p>
       <p>
-        Resulting work: tightening keyword targeting, plus landing page
-        changes to increase call-rate. Then watching the outcome to
-        confirm improvement instead of guessing.
+        That led to tighter keyword targeting and landing page changes to get more
+        calls, then watching the outcome to make sure it actually improved.
       </p>
     </div>
   </section>
@@ -381,10 +378,10 @@
         <li>No customer accounts at all</li>
       </ul>
       <p>
-        Not six problems &mdash; six views of one event. A call arrives from a
-        source and becomes a job, the job consumes tires, produces an invoice,
-        generates expenses, and belongs to a customer. Modeling that event once
-        collapses all six.
+        It wasn't six problems. It was six views of one event: a call comes in
+        from a source and becomes a job, the job uses tires, produces an invoice,
+        creates expenses, and belongs to a customer. Model that once and all six
+        are covered.
       </p>
       <p><a href="../tooling/">How that became an internal tool &rarr;</a></p>
     </div>

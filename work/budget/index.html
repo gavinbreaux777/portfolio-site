@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Budget &mdash; Gavin Breaux</title>
+<meta name="description" content="A budgeting web app I built with Claude Code because I couldn't find one that worked. Cloudflare Workers, D1, passkey sign-in, and two checks that have to agree.">
+<link rel="stylesheet" href="../../assets/site.css">
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="sitenav">
+    <a href="../../">Home</a>
+    <a href="../../resume/">Resume</a>
+    <a href="../" aria-current="page">Side Projects</a>
+  </nav>
+
+  <header class="masthead">
+    <div class="stamp">
+      <span class="label">Side project</span>
+      <span class="label">Web app</span>
+      <span class="label">In use</span>
+    </div>
+
+    <h1>Budget</h1>
+    <p class="label">A spiteful build</p>
+
+    <p class="deck">
+      To be honest, I didn't want to build the app.
+      Budget apps are completely overdone, but I could not find an app that fit what
+      I wanted and actually WORKED (that's a why-is-it-so-hard-to-make-an-app-that-doesn't-delete-my-data 
+      driven all-caps). So I built a budgeting web app reaching back 4 years across a
+      checking and savings account, and a credit card, usable from a phone
+      or a PC, with passkey authentication. I built it with Claude Code, so most of the work was proving that it 
+      works.
+    </p>
+
+    <div class="byline">
+      <span class="label"><a href="https://github.com/gavinbreaux777/Budget" target="_blank" rel="noopener">github.com/gavinbreaux777/Budget</a></span>
+      <span class="label">Cloudflare Workers &middot; D1 (SQLite) &middot; WebAuthn &middot;</span>
+    </div>
+  </header>
+
+  <div class="shot-row">
+    <figure class="shot shot-zoom shot-wide">
+      <a href="../../assets/Images/budget-ledger.webp" target="_blank" rel="noopener">
+        <img src="../../assets/Images/budget-ledger.webp" alt="The Ledger tab: a net worth card with a trend line, tiles for checking, savings and card owed, search and filter controls, and the start of a transaction table with category, account, amount and balance columns. The dollar figures are blurred." loading="lazy" decoding="async">
+      </a>
+      <figcaption>
+        The ledger. Filters and paging run on the server, so the totals match what the checks assert. Figures are blurred.
+      </figcaption>
+    </figure>
+    <figure class="shot shot-zoom shot-wide">
+      <a href="../../assets/Images/budget-spending.webp" target="_blank" rel="noopener">
+        <img src="../../assets/Images/budget-spending.webp" alt="The Spending tab: paired green and red bars for money in and money out across six months, above the same four balance tiles. The dollar figures are blurred." loading="lazy" decoding="async">
+      </a>
+      <figcaption>
+        Money in against money out, month by month. Figures are blurred.
+      </figcaption>
+    </figure>
+    <figure class="shot shot-zoom shot-wide">
+      <a href="../../assets/Images/budget-categories.webp" target="_blank" rel="noopener">
+        <img src="../../assets/Images/budget-categories.webp" alt="The Categories tab: a table with one row per category, such as Housing, Car, Groceries and Dining, and a column per month with change arrows, plus Total and Avg / mo columns. The dollar figures are blurred." loading="lazy" decoding="async">
+      </a>
+      <figcaption>
+        Spending by category and month, with the change from the month before. Figures are blurred.
+      </figcaption>
+    </figure>
+    <figure class="shot shot-zoom shot-wide">
+      <a href="../../assets/Images/budget-networth.webp" target="_blank" rel="noopener">
+        <img src="../../assets/Images/budget-networth.webp" alt="The Net worth tab: a line chart of net worth, cash and card owed over several months, with a marker on one day and a readout of that day below. The dollar figures are blurred." loading="lazy" decoding="async">
+      </a>
+      <figcaption>
+        Net worth over time, with a readout for any day you scrub to. Figures are blurred.
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="spec-strip">
+    <div class="spec">
+      <span class="spec-val">2</span>
+      <span class="label">Verification layers</span>
+      <span class="spec-note">One queries the database directly, one uses the API. 2 different routes that must agree</span>
+    </div>
+    <div class="spec">
+      <span class="spec-val">Daily</span>
+      <span class="label">Automatic sync</span>
+      <span class="spec-note">A scheduled SimpleFIN pull each morning</span>
+    </div>
+    <div class="spec">
+      <span class="spec-val">0&cent;</span>
+      <span class="label">Tolerance</span>
+      <span class="spec-note">Wrong is wrong, and you can't be sure if its a little wrong, or a lotta wrong</span>
+    </div>
+  </div>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 02</span>
+      <span class="label">Design</span>
+    </div>
+    <div class="body-col">
+      <h2>Decisions, decisions</h2>
+      <p>
+        Here are some of the more important decisions made in the project. The first problem was the
+        initial import path (CSV exports, then PDF statements) that loaded the history.
+        The historical data was buried in old bank statements with only short-term
+        export options, so step 1 was to gather it all. Once all of it was gathered I
+        switched to SimpleFIN only, so those entries are kept as history.
+      </p>
+      <ul class="plain">
+        <li>
+          <strong>The database is the source of truth, not the statements or CSV exports.</strong>
+          The first design kept CSV files authoritative with a local pandas
+          pipeline. That can't run from a phone, and that makes a dissapointing budget app.
+        </li>
+        <li>
+          <strong>Every row comes from the bank.</strong> There is no manual
+          entry path. Net worth matches the bank-reported balances
+          and there's no duplicate risk. This simplifies verification and makes
+          sense in modern banking.
+        </li>
+        <li>
+          <strong>The unique hash needed to handle true duplicates.</strong> A
+          transaction's identity is a hash of its content. Unexpectantly, a counter was
+          needed to make it unique in the case of multiple, true-identical transactions.
+          (Maybe I changed my mind about how many donuts I wanted!)
+          Otherwise, the second was dropped as a duplicate. This surprisingly happened
+          eight times in the real data.
+        </li>
+        <li>
+          <strong>Borrowed auth, unique credentials</strong>
+          The auth code was borrowed from other apps that shared the auth code and
+          the credentials. But the tricks that
+          let other sibling apps share passkeys was deliberately not copied. This meant 
+          separate session secrets and no domain attribute to share passkeys with sibling apps.
+        </li>
+        <li>
+          <strong>Starting with real phone layouts</strong> Instead of trying
+          to make one layout and style work on PC and mobile, I started them separate. At phone size
+          the transaction table becomes a stack of cards, with the same cells
+          shuffled around on a CSS grid. Same markup, still a table to a screen reader, 
+          and 2 good-looking, unique layouts.
+        </li>
+        <li>
+          <strong>Categories are looked up when you read, not saved on each
+          row.</strong> A category is set on the merchant, not the transaction.
+          The logic looks for manual override then the merchant category.
+          Changing categories is then a single update.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 03</span>
+      <span class="label">Bugs</span>
+    </div>
+    <div class="body-col">
+      <h2>Maintaining Consistent Tests and Documentation On a Changing Project</h2>
+      <p>
+        Developing with AI assistance changes the source of issues. Bad or outdated documentation
+        is often caught by a human when they go to modify that part of the code, but AI is 
+        happy to write code consistent with bad documentation.
+        Having the right tests feels good enough, but written wrong they surprisingly eat up a lot of dev time.
+      </p>
+
+      <ul class="plain">
+        <li>
+          <strong>Changing scope equals changing tests</strong> The project started with a plan of manual imports and a focus of verifying historical data,
+          so tests were initially written around known figures. But the issues quicky transitioned
+          to focus on duplicates, overwriting, and other live-update quirks once it was decided
+          to use automatic bank sync. The static tests made sense early on, but had to be mostly abandoned
+          in exchange for dynamic figuring.
+        </li>
+        <li>
+          <strong>Slight changes = consistency/documentation breakdown</strong>
+          As the project changed shape, the UI bended to it's crazed will. But it wasn't
+          the big changes that caused trouble. A few tab names were changed slightly at one 
+          iteration, but were not updated uniformly across the code. In another iteration, the 
+          function of the tab drifted farther, but of course the names still weren't updated 
+          across the code. Within a couple minor revisions of the UI, the newly named "Merchants"
+          tab was still being called "Where it goes" in other parts of the code. While it didn't cause
+          a major issue, after a few chat rounds with Claude, it noticed it was overlooking other parts
+          of the code that were still using the old name. Some people think AI reduces the need for 
+          good documentation, but in some cases the AI needs better documentation than you do.
+        </li>
+        <li>
+          <strong>A comment for code that didn't exist</strong> A
+          comment claimed rollback restored the previous "anchor balance". That
+          code (and that behavior in general) had been abandoned several iterations ago and 
+          Claude spent a few rounds writing code based on a transaction date anchor
+          that no longer existed.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 04</span>
+      <span class="label">Verification</span>
+    </div>
+    <div class="body-col">
+      <h2>Two paths that must agree</h2>
+      <p>
+        The same numbers are checked twice, by two scripts that share no code. If
+        they ever disagree, something is wrong.
+      </p>
+      <ul class="plain">
+        <li>
+          <strong>Database path.</strong> Reads the database directly and
+          calculates the totals and balances from the rows.
+        </li>
+        <li>
+          <strong>API path.</strong> Asks the app for the same figures through
+          its web API, the way the UI does, and confirms they match what the
+          database queries found.
+        </li>
+        <li>
+          <strong>Why two.</strong> A check can be wrong in a way that still
+          passes. Having a second one built a different way means a mistake has
+          to slip by both.
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 06</span>
+      <span class="label">How it was built</span>
+    </div>
+    <div class="body-col">
+      <h2>Built with an AI assistant</h2>
+      <p>
+        This project was built with
+        <a href="https://claude.com/claude-code" target="_blank" rel="noopener">Claude Code</a>,
+        and that shaped what I spent my attention on. Creating code is fast, so the
+        real job now is knowing whether it's right, which is why the verification
+        checks, balance requirements, and a habit of reproducing an
+        agent's findings before accepting them (or worse, writing code on them) is the new coding.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="rail">
+      <span class="rail-num">&sect; 07</span>
+      <span class="label">Status</span>
+    </div>
+    <div class="body-col">
+      <h2>Where it stands</h2>
+      <p>
+        The app is in daily use. The history came in through CSV and PDF
+        statement imports. Once all of it was stored in the database, I switched to SimpleFIN
+        only, and a scheduled job now syncs new transactions each morning. At this point,
+        the app's developments are improving the UI and visualizing the data I really wanna see.
+      </p>
+      <p>
+        <a class="card-cta cta-standalone" href="https://github.com/gavinbreaux777/Budget" target="_blank" rel="noopener">View the repository on GitHub</a>
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="byline">
+      <span class="label">Gavin Breaux</span>
+      <span class="label"><a href="mailto:gavinbreaux777@yahoo.com">gavinbreaux777@yahoo.com</a></span>
+    </div>
+    <p class="footer-note">
+      <a href="../">&larr; Back to side projects</a>
+    </p>
+  </footer>
+
+</div>
+</body>
+</html>
